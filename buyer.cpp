@@ -1,7 +1,7 @@
 #include "buyer.h"
 #include "product.h"
-Buyer::Buyer(const char * name, const char * password, Address &add, Cart & cart)
-	: b_address(add), b_cart(cart)
+Buyer::Buyer(const char * name, const char * password, Address &add, Cart & cart,Order & order)
+	: b_address(add), b_cart(cart),b_order(order)
 {
 	//main c'tor
 	setPassword(password);// צריך לבדוק מה עושים אם המתודה תחזיר 0 וצריך להקיש סיסמה מחדש
@@ -11,6 +11,7 @@ Buyer::Buyer(const char * name, const char * password, Address &add, Cart & cart
 //----------------------------------------------------------------------------------------//
 Buyer::Buyer(const Buyer & other)
 {//copy c'tor
+	b_order = other.b_order;
 	setName(other.b_name);
 	setAddress(other.b_address);
 	setPassword(other.b_password);
@@ -22,6 +23,7 @@ Buyer::Buyer(Buyer && other)
 	b_name = other.b_name;
 	b_address = other.b_address;
 	b_password = other.b_password;
+	b_order = other.b_order;
 	other.b_name = nullptr;
 	other.b_password = nullptr;
 }

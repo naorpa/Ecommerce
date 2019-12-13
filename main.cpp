@@ -60,6 +60,7 @@ void MenuOpertaion(int oper, User & user)
 		char b_state[MAX_CHAR_INPUT];
 		char b_street[MAX_CHAR_INPUT];
 		Cart bmy_cart;
+		Order order;
 		cout << "Hello Buyer, please enter full name:" << endl;
 		cin.ignore(numeric_limits <streamsize> ::max(), '\n');
 		cin.getline(b_name, MAX_CHAR_INPUT);
@@ -80,7 +81,7 @@ void MenuOpertaion(int oper, User & user)
 		cin.getline(b_city, MAX_CHAR_INPUT);
 		cin.getline(b_street, MAX_CHAR_INPUT);
 		Address my_address(b_city, b_state, b_street);
-		Buyer my_buyer(b_name, b_pass, my_address, bmy_cart);
+		Buyer my_buyer(b_name, b_pass, my_address, bmy_cart,order);
 		user.addBuyer(&my_buyer);
 	} break;
 	//----------------------------------------------------------------------------------------//
@@ -177,6 +178,7 @@ void MenuOpertaion(int oper, User & user)
 			{
 				my_product.setCategory(Product::ELECTRONICS);
 			}
+			my_product.setSeller(&my_seller);
 			my_seller.addProductToSeller(my_product);
 		}
 	}break;//Add a product for seller
@@ -230,28 +232,35 @@ void MenuOpertaion(int oper, User & user)
 		}
 		else
 		{
+			int countP = 0, counterArr = 0;
 			int serial;
 			Buyer my_buyer(*(user.findBuyer(name)));
 			cout << "Welcome, " << my_buyer.getName() << endl;
-			cout << "Please write the serial number of the products that you want to order:(if you want to stop adding prees -1" << endl;
 			my_buyer.getCart().PrintCart();
+			cout << "Please enter the number of the product that you going to buy:" << endl;
+			cin >> countP;
+			Order order(countP);
+			counterArr=order.SetProductArray();
+			if (counterArr == 0) {
+				cout << "You Pressed 0 Proudcts." << endl; exit(1);
+			}
+			counterArr = 0;
+			cout << "Please write the serial number of the products that you want to order:(if you want to stop adding prees -1" << endl;
 			cin >> serial;
-			int logicArr = my_buyer.getCart().GetLogicS();
+			int logicArr = my_buyer.getCart().GetLogicS();//how many proudcts in the old cart
+			
 			while (serial != -1)
 			{
 				for (int i = 0; i < logicArr; i++)
 				{
-					if (my_buyer.getCart().getProductArr()->getSerial() == serial)
+					if (my_buyer.getCart().getProductArr()[i].getSerial() == serial)
 					{
-						
-						
+						order.GetProductsArray[counterArr];
+						counterArr++;
 					}
 				}
 			}
-		}
-
-			
-
+		}		
 	}
 	//----------------------------------------------------------------------------------------//
 	}

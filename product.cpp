@@ -16,6 +16,7 @@ Product::Product(const Product & other)
 	setName(p_name);
 	setCategory(p_category);
 	setPrice(p_price);
+	this->p_seller = other.p_seller;
 }
 //----------------------------------------------------------------------------------------//
 Product::Product(Product && other)
@@ -24,6 +25,7 @@ Product::Product(Product && other)
 	p_category = other.p_category;
 	p_price = other.p_price;
 	p_serial = other.p_serial;
+	p_seller = other.p_seller;
 	other.p_name = nullptr;
 }
 //----------------------------------------------------------------------------------------//
@@ -79,4 +81,8 @@ int Product::getSerial() const
 void Product::setSeller(Seller * seller)
 {
 	this->p_seller = seller;
+}
+Seller *Product::Getseller() const
+{
+	return this->p_seller;
 }
