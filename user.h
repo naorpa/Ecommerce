@@ -26,7 +26,8 @@ public:
 	void addSeller(Seller* my_seller);
 	void addBuyer(Buyer * my_buyer);
 	bool approveLogIn(char *user, char * pass,int indicator);
-	Seller & findSeller(char * name);
+	Seller * findSeller(char * name);
 	Buyer * findBuyer(char * name);
+	bool checkName(char *  name, int indicator);
 };
 #endif // !__USER_H

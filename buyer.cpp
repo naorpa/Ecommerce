@@ -1,17 +1,17 @@
 #include "buyer.h"
 #include "product.h"
-Buyer::Buyer(const char * name, const char * password, Address &add, Cart & cart,Order & order)
-	: b_address(add), b_cart(cart),b_order(order)
+Buyer::Buyer(const char * name, const char * password, Address &add, Cart & cart)
+	: b_address(add), b_cart(cart) 
 {
 	//main c'tor
-	setPassword(password);// צריך לבדוק מה עושים אם המתודה תחזיר 0 וצריך להקיש סיסמה מחדש
+	setPassword(password);
 	setName(name);
-
+	this->b_order = nullptr;
+	this->b_order_size = 0;
 }
 //----------------------------------------------------------------------------------------//
 Buyer::Buyer(const Buyer & other)
 {//copy c'tor
-	b_order = other.b_order;
 	setName(other.b_name);
 	setAddress(other.b_address);
 	setPassword(other.b_password);
@@ -23,13 +23,13 @@ Buyer::Buyer(Buyer && other)
 	b_name = other.b_name;
 	b_address = other.b_address;
 	b_password = other.b_password;
-	b_order = other.b_order;
 	other.b_name = nullptr;
 	other.b_password = nullptr;
 }
 //----------------------------------------------------------------------------------------//
 Buyer::~Buyer()
 {//d'tor
+
 	delete[] b_name;
 	delete[] b_password;
 }
@@ -78,43 +78,111 @@ const char *Buyer::getPassword()const
 	return b_password;
 }
 //----------------------------------------------------------------------------------------//
-Cart Buyer::getCart()
+Cart & Buyer::getCart()
 {
 	return this->b_cart;
 }
 
 //----------------------------------------------------------------------------------------//
-void Buyer::addToCart(Product & prod)
+void Buyer::addToCart(Product * prod)
 {
-	if (this->b_cart.c_logicSize == 0)
-	{
-		this->b_cart.c_prouductArr = new Product[this->b_cart.c_phsize];
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setCategory(prod.getCategory());
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setName(prod.getName());
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setPrice(prod.getPrice());
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setSerialNumber(prod.getSerial());
+	if (this->b_cart.c_prouductArr == nullptr)
+	{//empty arr
+		this->b_cart.c_prouductArr = new Product *[this->b_cart.c_phsize];
+		this->b_cart.c_prouductArr[this->b_cart.c_logicSize] = new Product(*prod);
 		this->b_cart.c_logicSize++;
 	}
 	else
-	{
+	{ // realloc
 		if (this->b_cart.c_logicSize == this->b_cart.c_phsize)
-		{ //the array need realloc
+		{
 			this->b_cart.c_phsize *= 2;
-			Product * newProdArray = new Product[this->b_cart.c_phsize];
+			Product ** new_prod_array = new Product *[this->b_cart.c_phsize];
 			for (int i = 0; i < this->b_cart.c_logicSize; i++)
 			{
-				newProdArray[i].setCategory(this->b_cart.c_prouductArr[i].getCategory());
-				newProdArray[i].setName(this->b_cart.c_prouductArr[i].getName());
-				newProdArray[i].setPrice(this->b_cart.c_prouductArr[i].getPrice());
-				newProdArray[i].setSerialNumber(this->b_cart.c_prouductArr[i].getSerial());
+				new_prod_array[i] = this->b_cart.c_prouductArr[i];
 			}
 			delete[] this->b_cart.c_prouductArr;
-			this->b_cart.c_prouductArr = newProdArray;
+			this->b_cart.c_prouductArr = new_prod_array;
 		}
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setCategory(prod.getCategory());
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setName(prod.getName());
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setPrice(prod.getPrice());
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize].setSerialNumber(prod.getSerial());
+		this->b_cart.c_prouductArr[this->b_cart.c_logicSize] = new Product(*prod); //insert new product by ptr
 		this->b_cart.c_logicSize++;
 	}
 }
+//----------------------------------------------------------------------------------------//
+bool Buyer::findOrder(int num_of_order)
+{ // finds a specific order and return true if the order exits, false if it doesn't
+	for (int i = 0; i < this->b_order_size; i++)
+	{
+		if (this->b_order[i]->GetOrderNumber() == num_of_order)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+//----------------------------------------------------------------------------------------//
+Order ** Buyer::GetOrderArray() const
+{
+	return this->b_order;
+}
+//----------------------------------------------------------------------------------------//
+void Buyer::SetOrderLogicSize(const int size)
+{
+	this->b_order_size = size;
+}
+//----------------------------------------------------------------------------------------//
+void Buyer::AddOrderToOrderArr(Order * order)
+{
+	if (this->b_order == nullptr)
+	{//empty arr
+		this->b_order = new Order*;
+		this->b_order[0] = new Order(*order);
+		this->b_order_size++;
+	}
+	else
+	{ // realloc
+		Order ** new_order_array = new Order *[this->b_order_size ];
+		int size = this->b_order_size;
+		for (int i = 0; i < size; i++)
+		{
+			new_order_array[i] = this->b_order[i];
+		}
+		delete[] this->b_order;
+		this->b_order = new_order_array;
+
+		this->b_order[this->b_order_size] = order; //insert new order by ptr
+		this->b_order_size++;
+	}
+
+}
+//----------------------------------------------------------------------------------------//
+int Buyer::getOrderlogicsize() const
+{
+	return this->b_order_size;
+}
+//----------------------------------------------------------------------------------------//
+void Buyer::printBuyer()
+{
+	cout << "- Buyer's Name : " << this->getName() << endl;
+	cout << "- Buyer's Address : " << this->b_address.getState() << ", " << this->b_address.getCity() << ", " << this->b_address.getStreet() << endl;
+	if (this->b_order_size == 0)
+		cout << "- "<< this->getName() << " didn't buy anything yet!" << endl;
+	else
+	{
+		cout << "- These are the products " << this->getName() <<" bought:" << endl;
+		for (int i = 0; i < this->b_order_size; i++)
+		{
+			cout << "order number: " << i << endl;
+			for (int j = 0; j < this->b_order[i]->getNumberOfProd(); i++)
+			{
+				cout << "- Product's Name : " << this->b_order[i]->GetProductsArray()[j]->getName() << endl;
+				cout << "- Product's Price : " << this->b_order[i]->GetProductsArray()[j]->getPrice() << endl;
+				cout << "- Product's serial number : " << this->b_order[i]->GetProductsArray()[j]->getSerial() << endl;
+				cout << "<----------------------------------------->" << endl;
+			}
+		}
+	}
+	cout << "<----------------------------------------->" << endl;
+}
+//----------------------------------------------------------------------------------------//

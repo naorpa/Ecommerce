@@ -11,11 +11,13 @@ public:
 	enum eProductCategory {KIDS,ELECTRONICS,OFFICE,CLOTHES};
 	static const char * ProductCategoryStr[];// = { "Kids", "Electronics", "Office","Clothes" };
 private:
-	eProductCategory p_category;
-	Seller *         p_seller;
-	char *			 p_name;
-	int				 p_price;
-	int			     p_serial;
+	eProductCategory		 p_category;
+	char *					 p_name;
+	int						 p_price;
+	int						 p_serial;
+	static int				 serialCounter;
+	Seller *				 p_seller;
+
 public:
 	Product() = default; // default c'tor
 	Product(const eProductCategory p_category, const char * name, const int price); //main c'tor 
@@ -33,7 +35,7 @@ public:
 	int getSerial() const;
 	void setSeller(Seller * seller);
 	Seller *Getseller()const;
-
+	char * getCategoryByString() const;
 };
 
 #endif // __PRODUCT_H

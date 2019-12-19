@@ -3,11 +3,10 @@
 class Address
 {
 public:
-	static int constexpr MAX_ARR_SIZE = 256;
-public:
 	Address() = default;
 	Address(const Address & other); //copy c'tor
 	Address(char  *city, char* state, char * street);
+	~Address();
 	void setCity(const char * city);
 	void setState(const char * state);
 	void setStreet(const char * street);

@@ -11,16 +11,13 @@ class Seller
 public:
 	static constexpr int MAX_ARR_SIZE = 256;
 private :
-	Feedback *	s_feedArr; // לעדכן הכל
+	Feedback **	s_feedArr; // לעדכן הכל
 	Address	    s_address;
 	Cart		s_cart;
-	int			s_feed_lsize;
-	int			s_feed_phsize;
-	//int			s_bl_lsize;
-	//int			s_bl_phsize;
+	int			s_feed_lsize = 0;
+	int			s_feed_phsize = 1;
 	char 		*s_name;
 	char 		*s_password;
-	//Buyer		*s_buyers_list;
 
 public:
 	Seller() = default; // default c'tor
@@ -33,16 +30,13 @@ public:
 	void setName(const char * name);
 	void setAddress(Address address);
 	bool setPassword(const char * password);
-	//const Buyer * getBuyersList() const;
 	const char * getName() const;
 	const Address getAddress() const;
-	Cart getCart();
+	Cart & getCart();
 	const char * getPassword() const;
-	void addFeedback(Feedback &feed);
-	Feedback * getFeedBackArr() const;
-	void addProductToSeller(Product & newP);
-	//void addBuyerToList(Buyer & my_buyer);
-	//bool isBoughtBefore(Buyer & my_buyer);
+	void addFeedback(Feedback * feed);
+	void addProductToSeller(Product * newP);
+	void printSeller();
 };
 
 #endif // __SELLER_H

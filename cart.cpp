@@ -1,6 +1,6 @@
 #include "cart.h"
 #include "product.h"
-
+#include "seller.h"
 Cart::Cart() 
 {
 	this->c_logicSize = 0;
@@ -13,21 +13,13 @@ Cart::Cart(const Cart & other)
 {
 	SetLogicS(other.c_logicSize);
 	SetPhiS(other.c_phsize);
-	if (other.getProductArr() != nullptr) 
-	{
-		this->c_prouductArr = new Product[other.c_logicSize];
-		for (int i = 0; i < other.c_logicSize; i++)
-		{
-			c_prouductArr[i].setCategory(other.c_prouductArr[i].getCategory());
-			c_prouductArr[i].setName(other.c_prouductArr[i].getName());
-			c_prouductArr[i].setPrice(other.c_prouductArr[i].getPrice());
-			c_prouductArr[i].setSerialNumber(other.c_prouductArr[i].getSerial());
-		}
-	}
+	SetProductArr(other.c_prouductArr);
 }
 //---------------------------------------------------------------------------------------//
 Cart::~Cart()
 {
+	for (int i = 0; i < this->c_logicSize; i++)
+		delete this->c_prouductArr[i];
 	delete[] c_prouductArr;
 }
 //---------------------------------------------------------------------------------------//
@@ -51,22 +43,65 @@ void Cart::SetPhiS(int phisc)
 	this->c_phsize = phisc;
 }
 //---------------------------------------------------------------------------------------//
-Product * Cart::getProductArr() const
+Product ** Cart::getProductArr() const
 {
 	return c_prouductArr;
 }
 //---------------------------------------------------------------------------------------//
-void Cart::SetProductArr(Product *Arr)
+void Cart::SetProductArr(Product **Arr)
 {
 	this->c_prouductArr = Arr;
-	Arr = nullptr;
 }
-
+//---------------------------------------------------------------------------------------//
 void Cart::PrintCart()
 {
 	cout << "The items in the cart are:" << endl;
 	for (int i = 0; i < this->c_logicSize; i++)
 	{
-		cout << "Serial:" << this->c_prouductArr[i].getSerial() << " " << "Category:" << this->c_prouductArr[i].getCategory() << " " << "Name:" << this->c_prouductArr[i].getName() << " " << "Price:" << this->c_prouductArr[i].getPrice() << endl;
+		cout << "Serial:" << this->c_prouductArr[i]->getSerial() << " " << "Category:" << this->c_prouductArr[i]->getCategory() << " " << "Name:" << this->c_prouductArr[i]->getName() << " " << "Price:" << this->c_prouductArr[i]->getPrice() << endl;
 	}
+}
+//---------------------------------------------------------------------------------------//
+void Cart::PrintCartByCategory(char * pCategory)
+{
+	for (int i = 0; i < this->c_logicSize; i++)
+	{
+		if (strcmp(this->c_prouductArr[i]->getCategoryByString(), pCategory) == 0)
+		{
+			cout << "- Seller's Name : " << this->c_prouductArr[i]->Getseller()->getName() << endl;
+			cout << "- Product's Name : " << this->c_prouductArr[i]->getName() << endl;
+			cout << "- Product's Price : " << this->c_prouductArr[i]->getPrice() << endl;
+			cout << "- Product's serial number : " << this->c_prouductArr[i]->getSerial() << endl;
+			cout << "<----------------------------------------->" << endl;
+		}
+	}
+}
+//---------------------------------------------------------------------------------------//
+void Cart::PrintCartByProductName(char * pName)
+{
+	for (int i = 0; i < this->c_logicSize; i++)
+	{
+		if (strcmp(this->c_prouductArr[i]->getName(), pName) == 0)
+		{
+			cout << "- Seller's Name : " << this->c_prouductArr[i]->Getseller()->getName() << endl;
+			cout << "- Product's Name : " << this->c_prouductArr[i]->getName() << endl;
+			cout << "- Product's Price : " << this->c_prouductArr[i]->getPrice() << endl;
+			cout << "- Product's serial number : " << this->c_prouductArr[i]->getSerial() << endl;
+			cout << "<----------------------------------------->" << endl;
+		}
+	}
+}
+//---------------------------------------------------------------------------------------//
+Product*Cart::getProductBySerial(int serial)
+{
+	bool flag = false;
+	for (int i = 0; i < this->c_logicSize && flag == false; i++)
+	{
+		if (this->c_prouductArr[i]->getSerial() == serial)
+		{
+			return this->c_prouductArr[i];
+		}
+	}
+	if (flag == false)
+		return nullptr; //an indicator for the main that no product has found*/
 }

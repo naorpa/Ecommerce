@@ -8,6 +8,13 @@ Address::Address(char  *city,char* state,char * street)
 	setStreet(street);
 }
 //----------------------------------------------------------------------------------------//
+Address::~Address()
+{
+	delete[] this->a_city;
+	delete[] this->a_state;
+	delete[] this->a_street;
+}
+//----------------------------------------------------------------------------------------//
 Address::Address(const Address & other) //copy c'tor
 {
 	setCity(other.a_city);
@@ -38,6 +45,7 @@ const char * Address::getCity()const
  void Address::setState(const char * state)
  {
 	 this->a_state = strdup(state);
+
  }
  //----------------------------------------------------------------------------------------//
  void Address::setStreet(const char * street)

@@ -1,21 +1,23 @@
 #include "product.h"
 
 const char * Product::ProductCategoryStr[] = { "Kids", "Electronics", "Office","Clothes" };
-
+//----------------------------------------------------------------------------------------//
 Product::Product(const eProductCategory p_category,const char * name,const int price)
 {
 	//main c'tor
 	setName(name);
 	setCategory(p_category);
 	setPrice(price);
+	this->p_serial = ++serialCounter;
 	this->p_seller = nullptr;
-}   
+}
 //----------------------------------------------------------------------------------------//
 Product::Product(const Product & other)
 { //copy c'tor
-	setName(p_name);
-	setCategory(p_category);
-	setPrice(p_price);
+	setName(other.getName());
+	setCategory(other.getCategory());
+	setPrice(other.getPrice());
+	this->p_serial = other.p_serial;
 	this->p_seller = other.p_seller;
 }
 //----------------------------------------------------------------------------------------//
@@ -25,7 +27,7 @@ Product::Product(Product && other)
 	p_category = other.p_category;
 	p_price = other.p_price;
 	p_serial = other.p_serial;
-	p_seller = other.p_seller;
+	other.p_name = nullptr;
 	other.p_name = nullptr;
 }
 //----------------------------------------------------------------------------------------//
@@ -77,12 +79,29 @@ int Product::getSerial() const
 {
 	return p_serial;
 }
+//----------------------------------------------------------------------------------------//
 
 void Product::setSeller(Seller * seller)
 {
 	this->p_seller = seller;
 }
+//----------------------------------------------------------------------------------------//
 Seller *Product::Getseller() const
 {
 	return this->p_seller;
 }
+//----------------------------------------------------------------------------------------//
+char * Product::getCategoryByString() const
+{
+	if (p_category == CLOTHES)
+		return "CLOTHES";
+	if (p_category == KIDS)
+		return "KIDS";
+	if (p_category == ELECTRONICS)
+		return "ELECTRONICS";
+	return "OFFICE";
+}
+//----------------------------------------------------------------------------------------//
+int Product::serialCounter = 0;
+//----------------------------------------------------------------------------------------//
+

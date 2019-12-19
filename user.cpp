@@ -1,4 +1,5 @@
 #include "user.h"
+#include "product.h"
 
 User::User()
 {
@@ -79,34 +80,33 @@ Buyer** User::GetBuyerAddress() const
  //----------------------------------------------------------------------------------------//
  void User::addBuyer(Buyer * my_buyer)
  {
-		 if (this->b_arr == nullptr)
-		 {
-			 this->b_arr = new Buyer *[this->b_phiSizeArr];
-			 this->b_arr[this->b_logicSizeArr] = new Buyer(*my_buyer);
-			 this->b_logicSizeArr++;
-		 }
-		 else
-		 {
-			 if (this->b_logicSizeArr == this->b_phiSizeArr)
-			 {
-				 this->b_phiSizeArr *= 2;
-				 Buyer ** new_buyer_array = new Buyer *[this->b_phiSizeArr];
-				 for (int i = 0; i < this->b_logicSizeArr; i++)
-				 {
-					 new_buyer_array[i] = this->b_arr[i];
-				 }
-				 delete[] this->b_arr;
-				 this->b_arr = new_buyer_array;
-				 //new_seller_array = nullptr;
-			 }
-			 this->b_arr[this->b_logicSizeArr] = new Buyer(*my_buyer);
-			 this->b_logicSizeArr++;
-		 }
+	 if (this->b_arr == nullptr)
+	 {
+		 this->b_arr = new Buyer *[this->b_phiSizeArr];
+		 this->b_arr[this->b_logicSizeArr] = new Buyer(*my_buyer);
+		 this->b_logicSizeArr++;
 	 }
- 
+	 else
+	 {
+		 if (this->b_logicSizeArr == this->b_phiSizeArr)
+		 {
+			 this->b_phiSizeArr *= 2;
+			 Buyer ** new_buyer_array = new Buyer *[this->b_phiSizeArr];
+			 for (int i = 0; i < this->b_logicSizeArr; i++)
+			 {
+				 new_buyer_array[i] = this->b_arr[i];
+			 }
+			 delete[] this->b_arr;
+			 this->b_arr = new_buyer_array;
+			 //new_seller_array = nullptr;
+		 }
+		 this->b_arr[this->b_logicSizeArr] = new Buyer(*my_buyer);
+		 this->b_logicSizeArr++;
+	 }
+ }
  //----------------------------------------------------------------------------------------//
  bool User::approveLogIn(char * name, char * pass , int indicator )
- { // indicator is 1 = seller , indicator 0 = buyer
+ { // indicator is 1 = seller , indicator is 0 = buyer
 	 if (indicator == 1)
 	 {
 		 for (int i = 0; i < this->GetSellerLogicSizeArr(); i++)
@@ -135,14 +135,16 @@ Buyer** User::GetBuyerAddress() const
 	 }
  }
  //----------------------------------------------------------------------------------------//
- Seller & User::findSeller(char * name)
- {
+ Seller * User::findSeller(char * name)
+ { // finds and return the seller in the seller array
 	 for (int i = 0; i < this->s_logicSizeArr; i++)
 	 {
 		 if (strcmp(name, this->s_arr[i]->getName()) == 0)
-			 return *(this->s_arr[i]);
-	}
+			 return (this->s_arr[i]);
+	 }
+	 return nullptr;//seller not found
  }
+ //----------------------------------------------------------------------------------------//
  Buyer * User::findBuyer(char * name)
  { // finds and return the buyer in the buyer's array
 	 for (int i = 0; i < this->b_logicSizeArr; i++)
@@ -150,4 +152,26 @@ Buyer** User::GetBuyerAddress() const
 		 if (strcmp(name, this->b_arr[i]->getName()) == 0)
 			 return (this->b_arr[i]);
 	 }
+	 return nullptr; //buyer not found
+ }
+ //----------------------------------------------------------------------------------------//
+ bool User::checkName(char * name, int indicator)
+ { // if indicator = 0 check buyer's name, if indicator = 1 check seller's name
+	 if (indicator == 0)
+	 {
+		 for (int i = 0; i < this->b_logicSizeArr; i++)
+		 {
+			 if (strcmp(this->b_arr[i]->getName(), name) == 0)
+				 return true;
+		 }
+	 }
+	 if (indicator == 1)
+	 {
+		 for (int i = 0; i < this->s_logicSizeArr; i++)
+		 {
+			 if (strcmp(this->s_arr[i]->getName(), name) == 0)
+				 return true;
+		 }
+	 }
+	 return false;
  }

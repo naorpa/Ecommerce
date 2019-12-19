@@ -19,21 +19,29 @@ Feedback::Feedback(const Feedback & other)
 //----------------------------------------------------------------------------------------//
 Feedback::Feedback(Feedback && other)
 { //move c'tor
-	strcpy(this->f_name, other.f_name);
+	this->f_name = other.f_name;
 	f_date = other.f_date;
-	strcpy(this->f_description, other.f_description);
+	this->f_description= other.f_description;
+	other.f_name = nullptr;
+	other.f_description = nullptr;
+}
+//----------------------------------------------------------------------------------------//
+Feedback::~Feedback()
+{
+	delete[] this->f_description;
+	delete[] this->f_name;
 }
 //----------------------------------------------------------------------------------------//
 void Feedback::setName(const char * name)
 {
 	//the function sets the feedback's name
-	strcpy(this->f_name, name);
+	this->f_name = strdup(name);
 }
 //----------------------------------------------------------------------------------------//
 void Feedback::setDescription(const char * desc)
 {
 	//the function sets the feedback's description
-	strcpy(this->f_description, desc);
+	this->f_description = strdup(desc);
 }
 //----------------------------------------------------------------------------------------//
 
