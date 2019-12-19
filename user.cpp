@@ -19,6 +19,7 @@ User::~User()
 		delete this->s_arr[i];
 	delete[] this->b_arr;
 	delete[] this->s_arr;
+	cout << "ff" ;
 }
 //----------------------------------------------------------------------------------------//
 Buyer** User::GetBuyerAddress() const

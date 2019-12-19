@@ -324,8 +324,9 @@ void MenuOpertaion(int oper, User & user)
 				cout << "Are you sure? seller not found! try again" << endl;
 				cin.ignore(numeric_limits <streamsize> ::max(), '\n');
 				cin.getline(name, MAX_CHAR_INPUT);
+				my_seller = user.findSeller(name);
 			}
-			my_seller = user.findSeller(name);
+			
 		}
 		Product * my_product = my_seller->getCart().getProductBySerial(pSerial);
 		if (my_product == nullptr)
@@ -435,13 +436,13 @@ void MenuOpertaion(int oper, User & user)
 			cin.getline(pass, MAX_CHAR_INPUT);
 		}
 		Buyer *my_buyer = (user.findBuyer(name));
-		int lastorder = my_buyer->getOrderlogicsize() - 1;//size of the  order array size-1
-		int numberofProducts = (my_buyer->GetOrderArray()[lastorder])->getNumberOfProd();
 		cout << "Welcome, " << my_buyer->getName() << endl;
-		if (my_buyer->GetOrderArray() == nullptr)
+		if (my_buyer->getOrderlogicsize() == 0)
 		{
 			cout << "You don't have orders to pay for, return to the main menu." << endl; break;
 		}
+		int lastorder = my_buyer->getOrderlogicsize() - 1;//size of the  order array size-1
+		int numberofProducts = (my_buyer->GetOrderArray()[lastorder])->getNumberOfProd();
 		cout << "We understand that you want to pay for your final cart:" << endl;
 		for (int i = 0; i < numberofProducts; i++)
 		{
@@ -450,16 +451,6 @@ void MenuOpertaion(int oper, User & user)
 				<< (my_buyer->GetOrderArray()[lastorder])->GetProductsArray()[i]->getPrice() << endl;// *(my_buyer.GetOrderArray()[lastorder])->GetProductsArray()[i]->getPrice() << endl;
 		}
 		cout << "The total price of your cart is:" << my_buyer->GetOrderArray()[lastorder]->GetPriceOfOrder() << endl;
-		cout << "if you sure you want to buy press 1 if you dont want press 0:"<<endl;
-		cin >> input;
-		if (input == 0)
-		{
-			delete[] my_buyer->GetOrderArray()[lastorder];
-			int logicsize = my_buyer->getOrderlogicsize();
-			my_buyer->SetOrderLogicSize(logicsize - 1);
-		}
-		if (input == 1)
-		{
 			int logicOrder, logicCart, serialOrder, serialCart;
 			Product **order;
 			Product **cart;
@@ -475,7 +466,7 @@ void MenuOpertaion(int oper, User & user)
 					for (int j = 0; j < logicOrder; j++)
 					{
 						serialCart = my_buyer->getCart().getProductArr()[i]->getSerial();//serial in the cart in the place i
-						serialOrder = my_buyer->GetOrderArray()[lastorder]->GetProductsArray()[j]->getSerial();
+						serialOrder = my_buyer->GetOrderArray()[lastorder]->GetProductsArray()[j]->getSerial();//serial in the order in the place j
 						if (serialCart == serialOrder && (i + 1 < logicCart))//case 1:when its not the last one
 						{
 							my_buyer->getCart().getProductArr()[i] = my_buyer->getCart().getProductArr()[i + 1];
@@ -497,8 +488,10 @@ void MenuOpertaion(int oper, User & user)
 					delete my_buyer->getCart().getProductArr()[i];
 			}
 			my_buyer->getCart().SetLogicS(logicCart - counter);
-			cout << "Thank you for your pruch,enjoy!" << endl;
-		}
+			if(my_buyer->getCart().GetPhiS()-1!=0)
+			my_buyer->getCart().SetPhiS(logicCart - counter);
+			cout << "Thank you for your purchase,enjoy!" << endl;
+		
 	}break;
 	case 8:
 	{

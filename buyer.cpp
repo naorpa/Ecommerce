@@ -32,6 +32,9 @@ Buyer::~Buyer()
 
 	delete[] b_name;
 	delete[] b_password;
+	for (int i = 0;i< this->b_order_size; i++)
+		delete this->b_order[i];
+	delete[] this->b_order;
 }
 
 //----------------------------------------------------------------------------------------//
@@ -86,7 +89,8 @@ Cart & Buyer::getCart()
 //----------------------------------------------------------------------------------------//
 void Buyer::addToCart(Product * prod)
 {
-	if (this->b_cart.c_prouductArr == nullptr)
+	
+	if (this->b_cart.c_logicSize == 0)
 	{//empty arr
 		this->b_cart.c_prouductArr = new Product *[this->b_cart.c_phsize];
 		this->b_cart.c_prouductArr[this->b_cart.c_logicSize] = new Product(*prod);
@@ -134,7 +138,7 @@ void Buyer::SetOrderLogicSize(const int size)
 //----------------------------------------------------------------------------------------//
 void Buyer::AddOrderToOrderArr(Order * order)
 {
-	if (this->b_order == nullptr)
+	if (this->b_order == nullptr )
 	{//empty arr
 		this->b_order = new Order*;
 		this->b_order[0] = new Order(*order);
@@ -173,8 +177,8 @@ void Buyer::printBuyer()
 		cout << "- These are the products " << this->getName() <<" bought:" << endl;
 		for (int i = 0; i < this->b_order_size; i++)
 		{
-			cout << "order number: " << i << endl;
-			for (int j = 0; j < this->b_order[i]->getNumberOfProd(); i++)
+			cout << "order number: " << this->b_order[i]->GetOrderNumber() << endl;
+			for (int j = 0; j < this->b_order[i]->getNumberOfProd(); j++)
 			{
 				cout << "- Product's Name : " << this->b_order[i]->GetProductsArray()[j]->getName() << endl;
 				cout << "- Product's Price : " << this->b_order[i]->GetProductsArray()[j]->getPrice() << endl;
