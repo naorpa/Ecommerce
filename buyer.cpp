@@ -1,126 +1,92 @@
 #include "buyer.h"
 #include "product.h"
-Buyer::Buyer(const char * name, const char * password, Address &add, Cart & cart)
-	: b_address(add), b_cart(cart) 
+Buyer::Buyer(const char * name, const char * password, Address &add)
+	:Users(name,password,add)
 {
 	//main c'tor
-	setPassword(password);
-	setName(name);
 	this->b_order = nullptr;
 	this->b_order_size = 0;
 }
 //----------------------------------------------------------------------------------------//
-Buyer::Buyer(const Buyer & other)
+Buyer::Buyer(const Buyer & other) : Users(other) ,b_cart(other.b_cart)
 {//copy c'tor
-	setName(other.b_name);
-	setAddress(other.b_address);
-	setPassword(other.b_password);
+	SetOrderLogicSize(other.b_order_size);
+	this->b_order = new Order *[this->b_order_size];
+	for (int i = 0; i < this->b_order_size; i++)
+	{
+		this->b_order[i] = new Order(*this->b_order[i]);
+	}
 }
 //----------------------------------------------------------------------------------------//
-Buyer::Buyer(Buyer && other)
+Buyer::Buyer(Buyer && other) : Users(move(other))
 {
 	//move c'tor
-	b_name = other.b_name;
-	b_address = other.b_address;
-	b_password = other.b_password;
-	other.b_name = nullptr;
-	other.b_password = nullptr;
+	this->b_order = other.b_order;
+	other.b_order = nullptr;
 }
 //----------------------------------------------------------------------------------------//
 Buyer::~Buyer()
 {//d'tor
 
-	delete[] b_name;
-	delete[] b_password;
-	for (int i = 0;i< this->b_order_size; i++)
+	for (int i = 0; i < this->b_order_size; i++)
 		delete this->b_order[i];
 	delete[] this->b_order;
 }
-
 //----------------------------------------------------------------------------------------//
-void Buyer::setName(const char * name)
+const Buyer & Buyer::operator=(const Buyer & other)
 {
-	//the function sets the buyer's name
-	b_name = strdup(name);
-}
-//----------------------------------------------------------------------------------------//
-void Buyer::setAddress(Address address)
-{
-	//the function sets the buyer's address
-	this->b_address.setCity(address.getCity());
-	this->b_address.setState(address.getState());
-	this->b_address.setStreet(address.getStreet());
-}
-//----------------------------------------------------------------------------------------//
-bool Buyer::setPassword(const char * password)
-{
-	if (strlen(password) < MIN_PASSWORD_SIZE)
+	if (this != &other)
 	{
-		cout << "The password must contain a least 6 digits or numbers, please enter a new one" << endl;
-		return 0; //password didn't match requierments
+		Users::operator=(other);
+		this->b_cart = other.b_cart;
+		if (this->b_order_size > 0)
+		{
+			for (int i = 0; i < this->b_order_size; i++)
+				delete this->b_order[i];
+			delete[] this->b_order;
+		}
+		SetOrderLogicSize(other.b_order_size);
+		this->b_order = new Order *[this->b_order_size];
+		for (int i = 0; i < this->b_order_size; i++)
+		{
+			this->b_order[i] = new Order(*this->b_order[i]);
+		}
 	}
-	else
+	return *this;
+}
+//----------------------------------------------------------------------------------------//
+const Buyer & Buyer::operator=(Buyer && other)
+{
+	if (this != &other)
 	{
-		b_password = strdup(password);
-		return 1; //password has set
+		Users::operator=(other);
+		this->b_cart = other.b_cart;
+		other.b_cart.SetProductArr(nullptr);
+		for (int i = 0; i < this->b_order_size; i++)
+				delete this->b_order[i];
+		delete[] this->b_order;
+		this->b_order_size = other.b_order_size;
+		this->b_order = other.b_order;
+		other.b_order = nullptr;
 	}
-}
-//----------------------------------------------------------------------------------------//
-const char *Buyer::getName() const
-{//the function return the buyer's name
-	return b_name;
-}
-//----------------------------------------------------------------------------------------//
-const Address Buyer::getAddress() const
-{//the function return the buyer's address
-	return b_address;
-}
-//----------------------------------------------------------------------------------------//
-const char *Buyer::getPassword()const
-{//the function return the buyer's password
-	return b_password;
+	return *this;
 }
 //----------------------------------------------------------------------------------------//
 Cart & Buyer::getCart()
 {
 	return this->b_cart;
 }
-
-//----------------------------------------------------------------------------------------//
-void Buyer::addToCart(Product * prod)
-{
-	
-	if (this->b_cart.c_logicSize == 0)
-	{//empty arr
-		this->b_cart.c_prouductArr = new Product *[this->b_cart.c_phsize];
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize] = new Product(*prod);
-		this->b_cart.c_logicSize++;
-	}
-	else
-	{ // realloc
-		if (this->b_cart.c_logicSize == this->b_cart.c_phsize)
-		{
-			this->b_cart.c_phsize *= 2;
-			Product ** new_prod_array = new Product *[this->b_cart.c_phsize];
-			for (int i = 0; i < this->b_cart.c_logicSize; i++)
-			{
-				new_prod_array[i] = this->b_cart.c_prouductArr[i];
-			}
-			delete[] this->b_cart.c_prouductArr;
-			this->b_cart.c_prouductArr = new_prod_array;
-		}
-		this->b_cart.c_prouductArr[this->b_cart.c_logicSize] = new Product(*prod); //insert new product by ptr
-		this->b_cart.c_logicSize++;
-	}
-}
 //----------------------------------------------------------------------------------------//
 bool Buyer::findOrder(int num_of_order)
-{ // finds a specific order and return true if the order exits, false if it doesn't
+{ // finds a specific order and return true if the order exits and already paid, false if it doesn't
 	for (int i = 0; i < this->b_order_size; i++)
 	{
 		if (this->b_order[i]->GetOrderNumber() == num_of_order)
 		{
-			return true;
+			if (this->b_order[i]->getPaymentSatus() == true)
+			{
+				return true;
+			}
 		}
 	}
 	return false;
@@ -138,7 +104,7 @@ void Buyer::SetOrderLogicSize(const int size)
 //----------------------------------------------------------------------------------------//
 void Buyer::AddOrderToOrderArr(Order * order)
 {
-	if (this->b_order == nullptr )
+	if (this->b_order == nullptr)
 	{//empty arr
 		this->b_order = new Order*;
 		this->b_order[0] = new Order(*order);
@@ -146,7 +112,7 @@ void Buyer::AddOrderToOrderArr(Order * order)
 	}
 	else
 	{ // realloc
-		Order ** new_order_array = new Order *[this->b_order_size ];
+		Order ** new_order_array = new Order *[this->b_order_size+1];
 		int size = this->b_order_size;
 		for (int i = 0; i < size; i++)
 		{
@@ -154,8 +120,7 @@ void Buyer::AddOrderToOrderArr(Order * order)
 		}
 		delete[] this->b_order;
 		this->b_order = new_order_array;
-
-		this->b_order[this->b_order_size] = order; //insert new order by ptr
+		this->b_order[this->b_order_size] = new Order(*order); //insert new order by ptr
 		this->b_order_size++;
 	}
 
@@ -165,28 +130,115 @@ int Buyer::getOrderlogicsize() const
 {
 	return this->b_order_size;
 }
+
 //----------------------------------------------------------------------------------------//
-void Buyer::printBuyer()
+void Buyer::makeOrder()
 {
-	cout << "- Buyer's Name : " << this->getName() << endl;
-	cout << "- Buyer's Address : " << this->b_address.getState() << ", " << this->b_address.getCity() << ", " << this->b_address.getStreet() << endl;
-	if (this->b_order_size == 0)
-		cout << "- "<< this->getName() << " didn't buy anything yet!" << endl;
-	else
-	{
-		cout << "- These are the products " << this->getName() <<" bought:" << endl;
-		for (int i = 0; i < this->b_order_size; i++)
+	bool found = false;
+	int lastOrder = -1;
+	for (int i = 0; i < this->b_order_size && found == false; i++)
+	{//find the last order the buyer didn't pay for
+		if (this->b_order[i]->getPaymentSatus() == false)
 		{
-			cout << "order number: " << this->b_order[i]->GetOrderNumber() << endl;
-			for (int j = 0; j < this->b_order[i]->getNumberOfProd(); j++)
+			lastOrder = i;
+			found = true;
+		}
+	}
+	if (lastOrder == -1)
+	{ //all the orders have been paid, or no orders exist yet
+		return; //have no orders to pay for right now
+	}
+	int updatedCartSize = this->b_cart.GetLogicS() - this->GetOrderArray()[lastOrder]->getNumberOfProd();
+	int lastIndex = -1;
+	bool flag = false;
+
+	for (int i = 0; i < this->b_cart.GetLogicS(); i++)
+	{
+		for (int j = 0; j < this->b_order[lastOrder]->getNumberOfProd() && flag == false; j++)
+		{
+			if (this->b_cart.getProductArr()[i] == this->b_order[lastOrder]->GetProductsArray()[j])
 			{
-				cout << "- Product's Name : " << this->b_order[i]->GetProductsArray()[j]->getName() << endl;
-				cout << "- Product's Price : " << this->b_order[i]->GetProductsArray()[j]->getPrice() << endl;
-				cout << "- Product's serial number : " << this->b_order[i]->GetProductsArray()[j]->getSerial() << endl;
-				cout << "<----------------------------------------->" << endl;
+				this->b_cart.getProductArr()[i] = nullptr;
+				flag = true;
+			}
+		}
+		flag = false;
+	}
+	if (updatedCartSize != 0)
+	{
+		for (int i = 0; i < this->b_cart.GetLogicS(); i++)
+		{
+			if (this->b_cart.getProductArr()[i] == nullptr)
+			{
+				flag = false;
+				for (int j = i + 1; j < this->b_cart.GetLogicS() && flag == false; j++)
+				{
+					if (this->b_cart.getProductArr()[j] != nullptr)
+					{
+						this->b_cart.getProductArr()[i] = this->b_cart.getProductArr()[j];
+						this->b_cart.getProductArr()[j] = nullptr;
+						flag = true;
+					}
+				}
 			}
 		}
 	}
-	cout << "<----------------------------------------->" << endl;
+	if (updatedCartSize > 0)
+	{
+
+		this->b_cart.SetLogicS(updatedCartSize);
+		this->b_cart.SetPhiS(updatedCartSize);
+		this->GetOrderArray()[lastOrder]->setPaymentSatus(true);
+	}
+	if (updatedCartSize <= 0)
+	{ // cart need initialization
+		this->b_cart.SetLogicS(0);
+		this->b_cart.SetPhiS(1);
+		this->b_cart.SetProductArr(nullptr);
+		this->GetOrderArray()[lastOrder]->setPaymentSatus(true);
+	}
 }
 //----------------------------------------------------------------------------------------//
+
+ostream & operator<<(ostream & os, Buyer & buyer)
+{
+	os << "- Buyer's Name : " << buyer.getName() << endl;
+	os << "- Buyer's Address : " << buyer.add.getState() << ", " << buyer.add.getCity() << ", " << buyer.add.getStreet() << endl;
+	if (buyer.b_order_size == 0)
+		os << "- " << buyer.getName() << " didn't buy anything yet!" << endl;
+	else
+	{
+		cout << "- These are the products " << buyer.getName() << " bought:" << endl;
+		for (int i = 0; i < buyer.b_order_size; i++)
+		{
+			for (int j = 0; j < buyer.b_order[i]->getNumberOfProd(); j++)
+			{
+				os << "	- Product's Name : " << buyer.b_order[i]->GetProductsArray()[j]->getName() << endl;
+				os << "	- Product's Price : " << buyer.b_order[i]->GetProductsArray()[j]->getPrice() << endl;
+				os << "	- Product's serial number : " << buyer.b_order[i]->GetProductsArray()[j]->getSerial() << endl;
+				os << "<----------------------------------------->" << endl;
+			}
+		}
+	}
+	os << "<----------------------------------------->" << endl;
+	return os;
+}
+//----------------------------------------------------------------------------------------//
+const Buyer & Buyer::operator>(Buyer & other1)
+{
+	int sum1 = 0, sum2 = 0;
+	int Logic1, Logic2;
+	Logic1 = other1.getCart().GetLogicS();
+	Logic2 = this->b_cart.GetLogicS();
+	for (int i = 0; i < Logic1; i++)
+		sum1 += other1.getCart().getProductArr()[i]->getPrice();
+	for (int i = 0; i < Logic2; i++)
+		sum2 += this->b_cart.getProductArr()[i]->getPrice();
+	if (sum1 == sum2)
+		cout << "equal carts! we choose random buyer." << endl;
+	if (sum1 > sum2)
+		return other1;
+	else
+		return *this;
+
+}

@@ -20,7 +20,7 @@ public:
 	void setDate(Date other);
 	const char * getName() const;
 	const char * getDescription() const;
-	Date getDate() const;
+	Date & getDate();
 };
 
 #endif // __FEEDBACK_H

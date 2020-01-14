@@ -6,14 +6,18 @@ Order::Order()
 	this->o_numberofP = 0;
 	this->o_price = 0;
 	this->o_number = ++counter;
+	this->o_isPaid = false;
 }
+//----------------------------------------------------------------------------------------//
 Order::Order(int numberofProduct)
 {
 	this->o_productArr = new Product *[numberofProduct];
 	this->o_numberofP = numberofProduct;
 	this->o_price = 0;
 	this->o_number = ++counter;
+	this->o_isPaid = false;
 }
+//----------------------------------------------------------------------------------------//
 Order::Order(const Order & other)
 {
 	this->o_number = other.o_number;
@@ -23,7 +27,8 @@ Order::Order(const Order & other)
 	{
 		this->o_productArr[i] = other.o_productArr[i];
 	}
-	this->o_price = o_price;
+	this->o_price = other.o_price;
+	this->o_isPaid = other.o_isPaid;
 }
 //----------------------------------------------------------------------------------------//
 void Order::SetPrice(const int price)
@@ -77,6 +82,15 @@ bool Order::SetProductArray()
 	return 1;
 }
 //----------------------------------------------------------------------------------------//
+void Order::setPaymentSatus(bool flag)
+{
+	this->o_isPaid = flag;
+}
+bool Order::getPaymentSatus()
+{
+	return this->o_isPaid;
+}
+//----------------------------------------------------------------------------------------//
 Order::~Order()
 {
 	delete[] this->o_productArr;
@@ -84,3 +98,12 @@ Order::~Order()
 //----------------------------------------------------------------------------------------//
 int Order::counter = 0;
 //----------------------------------------------------------------------------------------//
+bool Order::checkQuantity(Product * temp)
+{
+	for (int i = 0; i < this->o_numberofP; i++)
+	{
+		if (temp == this->GetProductsArray()[i])
+			return true;
+	}
+	return false;
+}

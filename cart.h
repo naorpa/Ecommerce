@@ -6,22 +6,23 @@ class Product;
 class Cart
 {
 public:
-	friend class Buyer;
-	friend class Seller;
-public:
 	Cart();
 	Cart(const Cart&other);
 	~Cart();
 	const int GetLogicS() const;
 	const int GetPhiS() const;
-	Product ** getProductArr() const;
+	Product ** getProductArr();
 	void SetLogicS(int logic);
 	void SetPhiS(int phis);
 	void PrintCart();
 	void PrintCartByCategory(char * pCategory);
 	void PrintCartByProductName(char * pName);
+	const char * getProductName(int index);
 	Product* getProductBySerial(int serial);
 	void SetProductArr(Product **Arr);
+	void addToCart(Product * product);
+public:
+	const Cart& operator=(const Cart &other);
 private:
 	int c_logicSize;
 	int c_phsize;

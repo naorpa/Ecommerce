@@ -1,26 +1,23 @@
 #include "feedback.h"
 #include <string.h>
 
-Feedback::Feedback(const char * name, Date date, const char * description)
+Feedback::Feedback(const char * name, Date date, const char * description) : f_date(date)
 {
 	//main c'tor
 	setName(name);
-	setDate(date);
 	setDescription(description);
 }
 //----------------------------------------------------------------------------------------//
 
-Feedback::Feedback(const Feedback & other)
+Feedback::Feedback(const Feedback & other) : f_date(other.f_date)
 { //copy c'tor
 	setName(other.getName());
-	setDate(other.getDate());
 	setDescription(other.getDescription());
 }
 //----------------------------------------------------------------------------------------//
-Feedback::Feedback(Feedback && other)
+Feedback::Feedback(Feedback && other) : f_date(other.f_date)
 { //move c'tor
 	this->f_name = other.f_name;
-	f_date = other.f_date;
 	this->f_description= other.f_description;
 	other.f_name = nullptr;
 	other.f_description = nullptr;
@@ -45,7 +42,7 @@ void Feedback::setDescription(const char * desc)
 }
 //----------------------------------------------------------------------------------------//
 
-inline void Feedback::setDate(Date date)
+void Feedback::setDate(Date date)
 {
 	this->f_date.setDay(date.getDay());
 	this->f_date.setMonth(date.getMonth());
@@ -63,7 +60,7 @@ const char * Feedback::getDescription() const
 	return f_description;
 }
 //----------------------------------------------------------------------------------------//
-Date Feedback::getDate() const
+Date & Feedback::getDate()
 {
 	return f_date;
 }

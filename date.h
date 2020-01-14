@@ -11,7 +11,6 @@ private:
 	int month;
 	int year;
 public:
-	Date() = default; // default c'tor
 	Date(int day,int month,int year); //main c'tor 
 	Date(const Date & other); //copy c'tor
 public:

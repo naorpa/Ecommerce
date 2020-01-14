@@ -5,38 +5,29 @@
 #include "address.h"
 #include "cart.h"
 #include "buyer.h"
+#include "users.h"
 
-class Seller
+class Seller : virtual public Users
 {
 public:
 	static constexpr int MAX_ARR_SIZE = 256;
-private :
-	Feedback **	s_feedArr; // לעדכן הכל
-	Address	    s_address;
+protected :
+	Feedback **	s_feedArr = nullptr;  
 	Cart		s_cart;
 	int			s_feed_lsize = 0;
 	int			s_feed_phsize = 1;
-	char 		*s_name;
-	char 		*s_password;
-
 public:
 	Seller() = default; // default c'tor
-	Seller(const char * name, const char * password, Address & address , Cart & cart); //main c'tor 
+	Seller(const char * name, const char * password, Address & address); //main c'tor 
 	Seller(const Seller & other); //copy c'tor
 	Seller (Seller && other);//move c'tor!
-	~Seller();//d'tor
+	virtual ~Seller();//d'tor
 public:
-	static const int MIN_PASSWORD_SIZE = 6;
-	void setName(const char * name);
-	void setAddress(Address address);
-	bool setPassword(const char * password);
-	const char * getName() const;
-	const Address getAddress() const;
 	Cart & getCart();
-	const char * getPassword() const;
 	void addFeedback(Feedback * feed);
-	void addProductToSeller(Product * newP);
-	void printSeller();
+	virtual const Seller& operator=(const Seller& other);
+	virtual const Seller& operator=(Seller&& other);
+	friend ostream& operator<<(ostream & os, Seller & seller);
 };
 
 #endif // __SELLER_H

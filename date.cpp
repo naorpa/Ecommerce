@@ -12,7 +12,6 @@ Date::Date(const Date & other)
 	setDay(other.day);
 	setMonth(other.month);
 	setYear(other.year);
-
 }
 //----------------------------------------------------------------------------------------//
 void Date::setDay(const int day)

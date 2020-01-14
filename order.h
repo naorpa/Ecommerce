@@ -14,6 +14,7 @@ private:
 	Product **o_productArr;
 	int o_numberofP;
 	int o_price;
+	bool o_isPaid;
 public:
 	Order(int numberofProduct);
 	Order();
@@ -28,5 +29,9 @@ public:
 	Product **GetProductsArray()const;
 	void setNumberofOrder(const int number);
 	bool SetProductArray();
+	void setPaymentSatus(bool flag);
+	bool getPaymentSatus();
+	bool checkQuantity(Product * temp);
+
 };
 #endif // !__ORDER_H
