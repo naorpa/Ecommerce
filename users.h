@@ -1,40 +1,43 @@
 #ifndef __USERS_H
 #define __USERS_H
 #include "address.h"
+#include "SystemExceptions.h"
 #include <iostream>
 #include <string.h>
 #include <ostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 class Users
 {
 protected:
-	char * name;
-	char * password;
+	string name;
+	string password;
 	Address add;
 	Users() = default;
-	Users(ifstream & in){in >> *this;}//for files
-	Users(const char * name,const char* password, Address & add);
+	Users(const string & name, const string & pass, Address & add);
 	Users(const Users & other);
 public:
-	static const int TYPE_LEN = 6;//buyer5 seller6 bns3
 	static const int MIN_PASSWORD_SIZE = 6;
 	virtual ~Users();
 public:
-	void setName(const char * name);
+	void setName(const string & name);
 	void setAddress(const Address  & address);
-	bool setPassword(const char * password);
-	const char * getName() const;
+	void setPassword(const string & password);
+	const string & getName() const;
 	const Address & getAddress() const;
-	const char * getPassword() const;
+	const string & getPassword() const;
 public:
-	virtual const Users& operator=(const Users& other);
-	virtual const Users& operator=(Users&& other);
+	static const int TYPE_LEN = 6;//buyer5 seller6 bns3
+	friend void saveUsers(vector<Users*> & users, int size, const string & fileName);
+	friend vector <Users*> loadAllUsers(const string & filename, int &numOfusers);
+	friend Users* loadUser(ifstream & inFile);
 	friend ostream & operator <<(ostream & out, Users & u);
 	friend istream & operator >>(istream & in, Users &u)
 	{
-		char  name[20],  password[20];//chane to string
+		string  name;
+		string password;//chane to string
 		char t;
 		if (typeid(in) == typeid(ifstream))
 		{
@@ -43,15 +46,13 @@ public:
 			u.setName(name);
 			u.setPassword(password);
 		}
-			return in;
-	}	
-	friend void saveUsers(Users ** users, int size, const char * fileName);
-	friend Users ** loadAllUsers(const char * filename,int &numOfusers);
-	friend Users *loadUser(ifstream & inFile);
-	
-	
+		return in;
+	}
+	Users(ifstream & in) { in >> *this; }//for files
+public:
+	virtual const Users& operator=(const Users& other);
+	virtual const Users& operator=(Users&& other);
 };
-
 
 #endif // !Users_H
 

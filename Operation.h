@@ -1,13 +1,14 @@
 #ifndef __OPERATION_H
 #define __OPERATION_H
+#include "string.h"
 #include "system.h"
 #include "product.h"
-
+#include "SystemExceptions.h"
 
 void PrintMenu();
 void Menu(System & user);
 void MenuOpertaion(int oper, System & system);
-void logIn(char name[], char pass[], System & user);
+void logIn(string & name, string & pass, System & user);
 void Case0(System & user);
 void Case3(System & user);
 void Case4(System & user);

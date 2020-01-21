@@ -1,0 +1,4 @@
+﻿  main.cpp
+c:\users\naorp\onedrive\desktop\e_commerce\e_commerce\address.h(24): warning C4101: 't': unreferenced local variable
+c:\users\naorp\onedrive\desktop\e_commerce\e_commerce\users.h(41): warning C4101: 't': unreferenced local variable
+  E_COMMERCE.vcxproj -> C:\Users\Naorp\OneDrive\Desktop\E_COMMERCE\Debug\E_COMMERCE.exe

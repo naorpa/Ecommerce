@@ -1,32 +1,31 @@
 #ifndef __CART_H
 #define __CART_H
-
+#include <string>
+#include <vector>
+using namespace std;
 class Product;
 
 class Cart
 {
 public:
 	Cart();
-	Cart(const Cart&other);
 	~Cart();
-	const int GetLogicS() const;
-	const int GetPhiS() const;
-	Product ** getProductArr();
-	void SetLogicS(int logic);
-	void SetPhiS(int phis);
-	void PrintCart();
-	void PrintCartByCategory(char * pCategory);
-	void PrintCartByProductName(char * pName);
-	const char * getProductName(int index);
-	Product* getProductBySerial(int serial);
-	void SetProductArr(Product **Arr);
-	void addToCart(Product * product);
 public:
-	const Cart& operator=(const Cart &other);
+	vector <Product *> getProductArr() ;
+	void PrintCart();
+	void PrintCartByCategory(const string & pCategory);
+	void PrintCartByProductName(const string & pName);
+	const int & GetLogicS() const;
+	const string & getProductName(int index);
+	Product * getProductBySerial(int serial);
+	void SetProductArr(vector<Product *> Arr);
+	void addToCart(Product * product);
+	void deleteFromCart(Product * product);
+	vector<Product *>::iterator & getBegin();
+public:
+	//const Cart& operator=(const Cart &other);
 private:
-	int c_logicSize;
-	int c_phsize;
-	Product ** c_prouductArr;
+	vector<Product *>c_prouductArr;
 };
 
 

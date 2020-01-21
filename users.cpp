@@ -1,10 +1,10 @@
 #include "users.h"
 #include "system.h"
 
-Users::Users(const char * name, const char * password, Address & add) : add(add)
+Users::Users(const string & name, const string & pass, Address & add) : add(add)
 { // default c'tor
 	setName(name);
-	setPassword(password);
+	setPassword(pass);
 }
 //----------------------------------------------------------------------------------------//
 Users::Users(const Users & other) : add(other.add)
@@ -15,14 +15,19 @@ Users::Users(const Users & other) : add(other.add)
 //----------------------------------------------------------------------------------------//
 Users::~Users()
 {
-	delete[] this->password;
-	delete[] this->name;
 }
 //----------------------------------------------------------------------------------------//
-void Users::setName(const char * name)
+void Users::setName(const string & name) noexcept(false)
 {
 	//the function sets the name
-	this->name = strdup(name);
+	for (int i = 0; i < name.length(); i++)
+	{
+		if (name[i] < 65 || name[i] > 122 || (name[i] < 97 && name[i] > 90)) //Name contains a digit not from the ABC
+		{
+			throw NameException(name);
+		}
+	}
+	this->name = name;
 }
 //----------------------------------------------------------------------------------------//
 void Users::setAddress(const Address & address)
@@ -33,22 +38,20 @@ void Users::setAddress(const Address & address)
 	this->add.setStreet(address.getStreet());
 }
 //----------------------------------------------------------------------------------------//
-bool Users::setPassword(const char * password)
+void Users::setPassword(const string & pass)
 {
-	if (strlen(password) < MIN_PASSWORD_SIZE)
+	if (pass.length() < MIN_PASSWORD_SIZE)
 	{
-		cout << "The password must contain a least 6 digits or numbers, please enter a new one" << endl;
-		return 0; //password didn't match requierments
+		throw PasswordException(password); //password didn't match requierments
 	}
 	else
 	{
-		this->password = strdup(password);
-		return 1; //password has set
+		this->password = pass;
 	}
 }
 //----------------------------------------------------------------------------------------//
 
-const char * Users::getName() const
+const string & Users::getName() const
 {
 	return this->name;
 }
@@ -58,7 +61,7 @@ const Address & Users::getAddress() const
 	return this->add;
 }
 //----------------------------------------------------------------------------------------//
-const char * Users::getPassword() const
+const string & Users::getPassword() const
 {
 	return this->password;
 }
@@ -67,11 +70,9 @@ const Users & Users::operator=(const Users & other)
 {
 	if (this != &other)
 	{
-		delete[] this->name;
-		setName(other.name);
-		delete[]this->password;
+		setName(other.name);;
 		setPassword(other.password);
-		setAddress(other.add);//
+		setAddress(other.add);
 	}
 
 	return *this;
@@ -81,53 +82,39 @@ const Users & Users::operator=(Users && other)
 {
 	if (this != &other)
 	{
-		delete[] this->name;
 		this->name = other.name;
-		delete[]this->password;
 		this->password = other.password;
-		other.name = nullptr;
-		other.password = nullptr;
 		this->add = other.add;
 	}
 	return *this;
 }
-
+//----------------------------------------------------------------------------------------//
 //----------------------------------------------------------------------------------------//
 
 ostream & operator<<(ostream & out, Users & u)
 {
-		
-		if (typeid(out) == typeid(ofstream))
-			out << u.getName() << " " << u.getPassword() << " "<<u.add;
-		else //(typeid(out)==typeid(ostream)
-			out << "User name:" << u.getName() << " User Password:" << u.getPassword() << " User Adress:" << u.add;
-		return out;
-	
+
+	if (typeid(out) == typeid(ofstream))
+		out << u.getName() << " " << u.getPassword() << " " << u.add;
+	else //(typeid(out)==typeid(ostream)
+		out << "User name:" << u.getName() << " User Password:" << u.getPassword() << " User Adress:" << u.add;
+	return out;
+
 }
 //----------------------------------------------------------------------------------------//
-void saveUsers(Users ** users, int size, const char * filename)
+void saveUsers(vector<Users *> & users, int size, const string & filename)
 {
 	ofstream outFile(filename, ios::trunc);
-	outFile << size << endl;
-	for (int i = 0; i < size; i++)
-		outFile << typeid(*users[i]).name() + 6 << " " << *users[i] << endl;
+	outFile << users.size() << endl;
+	vector<Users *> ::iterator itr = users.begin();
+	vector<Users *> ::iterator itrend = users.end();
+	for (; itr != itrend; ++itr)
+		outFile << typeid(*(*itr)).name() + 6 << " " << *(*itr) << endl;
 	outFile.close();
 }
 //----------------------------------------------------------------------------------------//
-Users ** loadAllUsers(const char * filename, int &numOfusers)
-{
 
-	ifstream inFile(filename, ios::in);
-	inFile >> numOfusers;
-	Users ** UsersFromFile = new Users*[numOfusers];
-	for (int i = 0; i < numOfusers; i++)
-	{
-			UsersFromFile[i] = loadUser(inFile);
-	}
-	inFile.close();
-	return UsersFromFile;
-}
-Users *loadUser(ifstream & inFile)
+Users * loadUser(ifstream & inFile)
 {
 	Users *temp;
 	char type[Users::TYPE_LEN + 1];
@@ -151,7 +138,20 @@ Users *loadUser(ifstream & inFile)
 	else
 		return NULL;
 }
-
-
-
-
+vector <Users *> loadAllUsers(const string & filename, int &numOfusers)
+{
+	Users *temp;
+	ifstream inFile(filename, ios::in);
+	inFile >> numOfusers;
+	vector<Users *> UsersFromFile;
+	UsersFromFile.reserve(numOfusers);// new Users[numOfusers];
+	vector<Users *> ::iterator itr = UsersFromFile.begin();
+	vector<Users *> ::iterator itrend = UsersFromFile.end();
+	for (int i=0;i<numOfusers;i++)
+	{
+		temp=loadUser(inFile);
+		UsersFromFile.push_back(temp);
+	}
+	inFile.close();
+	return UsersFromFile;
+}

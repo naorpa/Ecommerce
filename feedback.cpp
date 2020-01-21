@@ -1,7 +1,7 @@
 #include "feedback.h"
 #include <string.h>
 
-Feedback::Feedback(const char * name, Date date, const char * description) : f_date(date)
+Feedback::Feedback(const string & name, Date date, const string & description) : f_date(date)
 {
 	//main c'tor
 	setName(name);
@@ -19,26 +19,18 @@ Feedback::Feedback(Feedback && other) : f_date(other.f_date)
 { //move c'tor
 	this->f_name = other.f_name;
 	this->f_description= other.f_description;
-	other.f_name = nullptr;
-	other.f_description = nullptr;
 }
 //----------------------------------------------------------------------------------------//
-Feedback::~Feedback()
-{
-	delete[] this->f_description;
-	delete[] this->f_name;
-}
-//----------------------------------------------------------------------------------------//
-void Feedback::setName(const char * name)
+void Feedback::setName(const string & name)
 {
 	//the function sets the feedback's name
-	this->f_name = strdup(name);
+	this->f_name = name;
 }
 //----------------------------------------------------------------------------------------//
-void Feedback::setDescription(const char * desc)
+void Feedback::setDescription(const string & desc)
 {
 	//the function sets the feedback's description
-	this->f_description = strdup(desc);
+	this->f_description = desc;
 }
 //----------------------------------------------------------------------------------------//
 
@@ -50,12 +42,12 @@ void Feedback::setDate(Date date)
 
 }
 //----------------------------------------------------------------------------------------//
-const char * Feedback::getName() const
+const string & Feedback::getName() const
 {
 	return f_name;
 }
 //----------------------------------------------------------------------------------------//
-const char * Feedback::getDescription() const
+const string & Feedback::getDescription() const
 {
 	return f_description;
 }

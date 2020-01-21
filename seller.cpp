@@ -3,7 +3,7 @@
 #include "cart.h"
 
 
-Seller::Seller(const char * name, const char * password, Address &add)
+Seller::Seller(const string & name, const string & password, Address &add)
 	: Users(name,password,add)
 {
 }
@@ -84,7 +84,6 @@ const Seller & Seller::operator=(Seller && other)
 		this->s_feed_phsize = other.s_feed_phsize;
 		other.s_feedArr = nullptr;
 		this->s_cart = other.s_cart;
-		other.s_cart.SetProductArr(nullptr);
 	}
 	return *this;
 }
@@ -118,7 +117,7 @@ ostream & operator<<(ostream & os,Seller & seller)
 	}
 	else
 	{
-		os << "These are" << seller.getName() << " products:" << endl;
+		os << "These are " << seller.getName() << " products:" << endl;
 		for (int i = 0; i < seller.s_cart.GetLogicS(); i++)
 		{
 			os << "- Product's Name : " << seller.s_cart.getProductArr()[i]->getName() << endl;

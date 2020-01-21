@@ -9,10 +9,10 @@ class Product
 {
 public:
 	enum eProductCategory {KIDS,ELECTRONICS,OFFICE,CLOTHES};
-	static const char * ProductCategoryStr[];// = { "Kids", "Electronics", "Office","Clothes" };
+	static const string ProductCategoryStr[];// = { "KIDS", "ELECTRONICS", "OFFICE","CLOTHES" };
 private:
 	eProductCategory		 p_category;
-	char *					 p_name;
+	string					 p_name;
 	int						 p_price;
 	int						 p_serial;
 	static int				 serialCounter;
@@ -20,22 +20,22 @@ private:
 
 public:
 	Product() = default; // default c'tor
-	Product(const eProductCategory p_category, const char * name, const int price); //main c'tor 
+	~Product();
+	Product(const eProductCategory p_category, const string & name, const int price); //main c'tor 
 	Product(const Product & other); //copy c'tor
 	Product(Product && other);//move c'tor
-	~Product();//d'tor	
 public:
 	void setCategory(eProductCategory category);
-	void setName(const char * name);
+	void setName(const string & name);
 	void setPrice(int price);
 	void setSerialNumber(int serial);
 	eProductCategory getCategory() const;
-	const char * getName() const;
+	const string & getName() const;
 	int getPrice() const;
 	int getSerial() const;
 	void setSeller(Seller * seller);
 	Seller *Getseller()const;
-	char * getCategoryByString() const;
+	const string & getCategoryByString();
 };
 
 #endif // __PRODUCT_H

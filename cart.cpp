@@ -1,85 +1,55 @@
 #include "cart.h"
 #include "product.h"
+#include <algorithm>
 #include "seller.h"
 Cart::Cart() 
 {
-	this->c_logicSize = 0;
-	this->c_phsize = 1;
-	this->c_prouductArr = nullptr;
-}
-//---------------------------------------------------------------------------------------//
-Cart::Cart(const Cart & other)
-//copy c'tor
-{
-	SetLogicS(other.c_logicSize);
-	SetPhiS(other.c_phsize);
-	SetProductArr(other.c_prouductArr);
 }
 //---------------------------------------------------------------------------------------//
 Cart::~Cart()
 {
-	for (int i = 0; i < this->c_logicSize; i++)
-		delete this->c_prouductArr[i];
-	delete[] c_prouductArr;
+	this->c_prouductArr.clear();
+	/*vector<Product *>::iterator itr = this->c_prouductArr.begin();
+	vector<Product *>::iterator itrEnd = this->c_prouductArr.end();
+	for (; itr != itrEnd; ++itr)
+	{
+		if (*itr != nullptr)
+		{
+			delete *itr;
+		}
+	}*/
 }
 //---------------------------------------------------------------------------------------//
-const int Cart::GetPhiS() const
-{
-	return c_phsize;
-}
-//---------------------------------------------------------------------------------------//
-const int Cart::GetLogicS() const
-{
-	return c_logicSize;
-}
-//---------------------------------------------------------------------------------------//
-void Cart::SetLogicS(int logic)
-{
-	this->c_logicSize = logic;
-}
-//---------------------------------------------------------------------------------------//
-void Cart::SetPhiS(int phisc)
-{
-	this->c_phsize = phisc;
-}
-//---------------------------------------------------------------------------------------//
-Product ** Cart::getProductArr() 
+vector<Product *> Cart::getProductArr() 
 {
 	return c_prouductArr;
 }
 //---------------------------------------------------------------------------------------//
-void Cart::SetProductArr(Product **Arr)
+void Cart::SetProductArr(vector<Product *> Arr)
 {
 	this->c_prouductArr = Arr;
 }
 //---------------------------------------------------------------------------------------//
 void Cart::addToCart(Product * prod)
 {
-	if (this->c_prouductArr == nullptr || this->c_logicSize == 0)
-	{//empty arr
-		this->c_prouductArr = new Product *[this->c_phsize];
-		this->c_prouductArr[this->c_logicSize] = new Product(*prod);
-		this->c_logicSize++;
-	}
-	else
-	{ // realloc
-		if (this->c_logicSize == this->c_phsize)
-		{
-			this->c_phsize *= 2;
-			Product ** new_prod_array = new Product *[this->c_phsize];
-			for (int i = 0; i < this->c_logicSize; i++)
-			{
-				new_prod_array[i] = this->c_prouductArr[i];
-			}
-			delete[] this->c_prouductArr;
-			this->c_prouductArr = new_prod_array;
-		}
-		this->c_prouductArr[this->c_logicSize] = new Product(*prod); //insert new product by ptr
-		this->c_logicSize++;
-	}
+	this->c_prouductArr.push_back(prod);
+	if (this->c_prouductArr.capacity() == this->c_prouductArr.size())
+		this->c_prouductArr.reserve(this->c_prouductArr.capacity() * 2); // for better complexity*/
 }
 //---------------------------------------------------------------------------------------//
-const Cart & Cart::operator=(const Cart & other)
+
+void Cart::deleteFromCart(Product * product)
+{
+	vector<Product *>::iterator found = find(this->c_prouductArr.begin(), this->c_prouductArr.end(), product);
+	this->c_prouductArr.erase(found);
+}
+vector<Product*>::iterator & Cart::getBegin()
+{
+	return this->c_prouductArr.begin();
+}
+
+//---------------------------------------------------------------------------------------//
+/*const Cart & Cart::operator=(const Cart & other)
 {
 	if (this != &other)
 	{
@@ -97,22 +67,23 @@ const Cart & Cart::operator=(const Cart & other)
 		}
 	}
 	return *this;
-}
+}*/
 //---------------------------------------------------------------------------------------//
 void Cart::PrintCart()
 {
 	cout << "The items in the cart are:" << endl;
-	for (int i = 0; i < this->c_logicSize; i++)
+	for (int i = 0; i < this->c_prouductArr.size(); i++)
 	{
 		cout << "Serial:" << this->c_prouductArr[i]->getSerial() << " " << "Category:" << Product::ProductCategoryStr[this->c_prouductArr[i]->getCategory()] << " " << "Name:" << this->c_prouductArr[i]->getName() << " " << "Price:" << this->c_prouductArr[i]->getPrice() << endl;
 	}
 }
 //---------------------------------------------------------------------------------------//
-void Cart::PrintCartByCategory(char * pCategory)
+void Cart::PrintCartByCategory(const string & pCategory)
 {
-	for (int i = 0; i < this->c_logicSize; i++)
+	for (int i = 0; i < this->c_prouductArr.size(); i++)
 	{
-		if (strcmp(this->c_prouductArr[i]->getCategoryByString(), pCategory) == 0)
+
+		if  (Product::ProductCategoryStr [this->c_prouductArr[i]->getCategory()] == (pCategory))
 		{
 			cout << "- Seller's Name : " << this->c_prouductArr[i]->Getseller()->getName() << endl;
 			cout << "- Product's Name : " << this->c_prouductArr[i]->getName() << endl;
@@ -123,11 +94,11 @@ void Cart::PrintCartByCategory(char * pCategory)
 	}
 }
 //---------------------------------------------------------------------------------------//
-void Cart::PrintCartByProductName(char * pName)
+void Cart::PrintCartByProductName(const string & pName)
 {
-	for (int i = 0; i < this->c_logicSize; i++)
+	for (int i = 0; i < this->c_prouductArr.size(); i++)
 	{
-		if (strcmp(this->c_prouductArr[i]->getName(), pName) == 0)
+		if (this->c_prouductArr[i]->getName().compare(pName) == 0)
 		{
 			cout << "- Seller's Name : " << this->c_prouductArr[i]->Getseller()->getName() << endl;
 			cout << "- Product's Name : " << this->c_prouductArr[i]->getName() << endl;
@@ -138,7 +109,12 @@ void Cart::PrintCartByProductName(char * pName)
 	}
 }
 //---------------------------------------------------------------------------------------//
-const char * Cart::getProductName(int index)
+const int & Cart::GetLogicS() const
+{
+	return this->c_prouductArr.size();
+}
+//---------------------------------------------------------------------------------------//
+const string & Cart::getProductName(int index) 
 {
 	return this->c_prouductArr[index]->getName();
 }
@@ -146,7 +122,7 @@ const char * Cart::getProductName(int index)
 Product*Cart::getProductBySerial(int serial)
 {
 	bool flag = false;
-	for (int i = 0; i < this->c_logicSize && flag == false; i++)
+	for (int i = 0; i < this->c_prouductArr.size() && flag == false; i++)
 	{
 		if (this->c_prouductArr[i]->getSerial() == serial)
 		{

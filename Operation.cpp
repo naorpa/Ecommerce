@@ -1,9 +1,9 @@
 #include "system.h"
 #include "product.h"
 #include "Operation.h"
-
-static const int MAX_CHAR_INPUT = 30;
-static const int MAX_DESCRIPTION_SIZE = 256;
+#include <iostream>
+#include <string>
+using namespace std;
 static const int ExitMenu = 16;
 
 void PrintMenu()
@@ -115,28 +115,20 @@ void MenuOpertaion(int oper, System & user)
 }
 
 //----------------------------------------------------------------------------------------//
-void logIn(char name[], char pass[], System & user)
+void logIn(string & name, string & pass, System & user)
 {
-	cout << "Hey, Please enter your name: " << endl;
-	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(name, MAX_CHAR_INPUT);
-	cout << "Please enter your password: " << endl;
-	cin.getline(pass, MAX_CHAR_INPUT);
-	if (user.approveLogIn(name, pass) == 0)
-	{ // couldn't find the requested user
-		while (user.approveLogIn(name, pass) == 0)
-		{
-			int indicator;
-			cout << "Your input didn't match, press 0 to exit:(press 1 to continue) " << endl;
-			cin >> indicator;
-			if (indicator == 0)
-				exit(1);
-			cout << "Please enter your name: " << endl;
-			cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-			cin.getline(name, MAX_CHAR_INPUT);
-			cout << "Please enter your password: (press 0 to exit) " << endl;
-			cin.getline(pass, MAX_CHAR_INPUT);
-		}
+	try {
+		cout << "Hey, Please enter your name: " << endl;
+		cin.ignore(numeric_limits <streamsize> ::max(), '\n');
+		std::getline(std::cin, name);
+		cout << "Please enter your password: " << endl;
+		std::getline(std::cin, pass);
+		user.approveLogIn(name, pass);
+	}
+	catch (UserExistException & exp)
+	{
+		exp.msg();
+		exit(1);
 	}
 }
 
@@ -144,132 +136,133 @@ void logIn(char name[], char pass[], System & user)
 //----------------------------------------------------------------------------------------------//
 void Case0(System & user)
 {
-	char name[MAX_CHAR_INPUT];
-	char pass[MAX_CHAR_INPUT];
-	char city[MAX_CHAR_INPUT];
-	char state[MAX_CHAR_INPUT];
-	char street[MAX_CHAR_INPUT];
-	cout << "Hello Buyer-Seller, please enter name:" << endl;
-	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(name, MAX_CHAR_INPUT);
-	while (user.checkName(name) == true)
-	{
-		cout << "your username is already taken. please enter another one:" << endl;
-		cin.getline(name, MAX_CHAR_INPUT);
+
+	string name;
+	string pass;
+	string city;
+	string state;
+	string street;
+	try {
+		cout << "Hello Buyer-Seller, please enter name:" << endl;
+		cin.ignore(numeric_limits <streamsize> ::max(), '\n');
+		getline(cin, name);
+		cout << "please enter your password: (at least 6 digits) " << endl;
+		cin.clear();
+		getline(cin, pass);
+		cout << "please enter your Address: (1. state 2. city 3. street) " << endl;
+		getline(cin, state);
+		getline(cin, city);
+		getline(cin, street);
+		Address my_address(city, state, street);
+		BNS * my_bns = new BNS(name, pass, my_address);
+		user.addUser(my_bns);
 	}
-	cout << "please enter your password: (at least 6 digits) " << endl;
-	cin.clear();
-	cin.getline(pass, MAX_CHAR_INPUT);
-	if (strlen(pass) < 6)
+	catch (UsersExceptions & exp)
 	{
-		while (strlen(pass) < 6)
-		{
-			cout << "Your password didn't match the requierments! Please enter again :)" << endl;
-			cin.clear();
-			cin.getline(pass, MAX_CHAR_INPUT);
-		}
+		exp.msg();
+		return;
 	}
-	cout << "please enter your Address: (1. state 2. city 3. street) " << endl;
-	cin.getline(state, MAX_CHAR_INPUT);
-	cin.getline(city, MAX_CHAR_INPUT);
-	cin.getline(street, MAX_CHAR_INPUT);
-	Address my_address(city, state, street);
-	BNS my_bns(name, pass, my_address);
-	user.addUser(&my_bns);
+	catch (NameExistException & exp)
+	{
+		exp.msg();
+		return;
+	}
 }
 //---------------------------------------------------------------------------------------------//
 void Case1_Or_14(System & user)
 {
-	char b_name[MAX_CHAR_INPUT];
-	char b_pass[MAX_CHAR_INPUT];
-	char b_city[MAX_CHAR_INPUT];
-	char b_state[MAX_CHAR_INPUT];
-	char b_street[MAX_CHAR_INPUT];
-	cout << "Hello Buyer, please enter name:" << endl;
-	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(b_name, MAX_CHAR_INPUT);
-	while (user.checkName(b_name) == true)
-	{
-		cout << "your username is already taken. please enter another one:" << endl;
-		cin.getline(b_name, MAX_CHAR_INPUT);
+	string b_name;
+	string b_pass;
+	string b_city;
+	string b_state;
+	string b_street;
+	try {
+		cout << "Hello Buyer, please enter name:" << endl;
+		cin.ignore(numeric_limits <streamsize> ::max(), '\n');
+		getline(cin, b_name);
+		cout << "please enter your password: (at least 6 digits) " << endl;
+		cin.clear();
+		getline(cin, b_pass);
+		cout << "please enter your Address: (1. state 2. city 3. street) " << endl;
+		getline(cin, b_state);
+		getline(cin, b_city);
+		getline(cin, b_street);
 	}
-	cout << "please enter your password: (at least 6 digits) " << endl;
-	cin.clear();
-	cin.getline(b_pass, MAX_CHAR_INPUT);
-	if (strlen(b_pass) < 6)
+	catch (UsersExceptions & exp)
 	{
-		while (strlen(b_pass) < 6)
-		{
-			cout << "Your password didn't match the requierments! Please enter again :)" << endl;
-			cin.clear();
-			cin.getline(b_pass, MAX_CHAR_INPUT);
-		}
+		exp.msg();
+		return;
 	}
-	cout << "please enter your Address: (1. state 2. city 3. street) " << endl;
-	cin.getline(b_state, MAX_CHAR_INPUT);
-	cin.getline(b_city, MAX_CHAR_INPUT);
-	cin.getline(b_street, MAX_CHAR_INPUT);
-	Address my_address(b_city, b_state, b_street);
-	Buyer my_buyer(b_name, b_pass, my_address);
-	user += my_buyer;
+	try
+	{
+		Address my_address(b_city, b_state, b_street);
+		Buyer * my_buyer = new Buyer(b_name, b_pass, my_address);
+		user += *my_buyer;
+	}
+	catch (NameExistException & exp)
+	{
+		exp.msg();
+		return;
+	}
 }
 //---------------------------------------------------------------------------------------------//
 
 void Case2_Or_15(System & user)
 {
-	char s_name[MAX_CHAR_INPUT];
-	char s_pass[MAX_CHAR_INPUT];
-	char s_city[MAX_CHAR_INPUT];
-	char s_state[MAX_CHAR_INPUT];
-	char s_street[MAX_CHAR_INPUT];
-	cout << "Hello Seller, please enter full name:" << endl;
-	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(s_name, MAX_CHAR_INPUT);
-	while (user.checkName(s_name) == true)
-	{
-		cout << "your username is already taken. please enter another one:" << endl;
-		cin.getline(s_name, MAX_CHAR_INPUT);
+	string s_name;
+	string s_pass;
+	string s_city;
+	string s_state;
+	string s_street;
+	try {
+		cout << "Hello Seller, please enter name:" << endl;
+		cin.ignore(numeric_limits <streamsize> ::max(), '\n');
+		getline(cin, s_name);
+		cout << "please enter your password: (at least 6 digits) " << endl;
+		cin.clear();
+		getline(cin, s_pass);
+		cout << "please enter your Address: (1. state 2. city 3. street) " << endl;
+		getline(cin, s_state);
+		getline(cin, s_city);
+		getline(cin, s_street);
 	}
-	cout << "please enter your password: (at least 6 digits) " << endl;
-	cin.clear();
-	cin.getline(s_pass, MAX_CHAR_INPUT);
-	if (strlen(s_pass) < 6)
+	catch (UsersExceptions & exp)
 	{
-		while (strlen(s_pass) < 6)
-		{
-			cout << "Your password didn't match the requierments! Please enter again :)" << endl;
-			cin.clear();
-			cin.getline(s_pass, MAX_CHAR_INPUT);
-		}
+		exp.msg();
+		return;
 	}
-	cout << "please enter your Address: (1. state 2. city 3. street) " << endl;
-	cin.getline(s_state, MAX_CHAR_INPUT);
-	cin.getline(s_city, MAX_CHAR_INPUT);
-	cin.getline(s_street, MAX_CHAR_INPUT);
-	Address my_address(s_city, s_state, s_street);
-	Seller my_seller(s_name, s_pass, my_address);
-	user.addUser(&my_seller);
+	try
+	{
+		Address my_address(s_city, s_state, s_street);
+		Seller * my_seller = new Seller(s_name, s_pass, my_address);
+		user += *my_seller;
+	}
+	catch (NameExistException & exp)
+	{
+		exp.msg();
+		return;
+	}
 }
 //--------------------------------------------------------------------------------------------//
 void Case3(System & user)
 {
-	char name[MAX_CHAR_INPUT];
-	char pass[MAX_CHAR_INPUT];
+	string name;
+	string pass;
 	logIn(name, pass, user);
-	char pName[MAX_CHAR_INPUT];
-	char pCategory[MAX_CHAR_INPUT];
+	string pName;
+	string pCategory;
 	int pPrice;
 	Seller * my_seller = user.findSeller(name);
 	cout << "Welcome, " << my_seller->getName() << endl;
 	cout << "Please enter the product's name: " << endl;
-	cin.getline(pName, MAX_CHAR_INPUT);
+	getline(cin, pName);
 	cin.clear();
 	cout << "Please enter the product category: (KIDS,CLOTHES,ELECTRONICS,OFFICE)" << endl;
-	cin.getline(pCategory, MAX_CHAR_INPUT);
-	while (strcmp(pCategory, "KIDS") != 0 && strcmp(pCategory, "OFFICE") != 0 && strcmp(pCategory, "ELECTRONICS") != 0 && strcmp(pCategory, "CLOTHES") != 0)
+	getline(cin, pCategory);
+	while (pCategory != "KIDS" && pCategory != "OFFICE" && pCategory != "ELECTRONICS" && pCategory != "CLOTHES")
 	{
 		cout << "Please enter again the product category: (KIDS,CLOTHES,ELECTRONICS,OFFICE)" << endl;
-		cin.getline(pCategory, MAX_CHAR_INPUT);
+		getline(cin, pCategory);
 	}
 	cout << "Please enter the price:" << endl;
 	cin >> pPrice;
@@ -278,48 +271,48 @@ void Case3(System & user)
 		cout << "Price can't be lower than 1, please enter again: " << endl;
 		cin >> pPrice;
 	}
-	if (strcmp(pCategory, "KIDS") == 0)
+	if (pCategory == "KIDS")
 	{
-		Product my_product(Product::KIDS, pName, pPrice);
-		my_product.setSeller(my_seller);
-		my_seller->getCart().addToCart(&my_product);
+		Product * my_product = new Product(Product::KIDS, pName, pPrice);
+		my_product->setSeller(my_seller);
+		my_seller->getCart().addToCart(my_product);
 	}
-	else if (strcmp(pCategory, "OFFICE") == 0)
+	else if (pCategory == "OFFICE")
 	{
-		Product my_product(Product::OFFICE, pName, pPrice);
-		my_product.setSeller(my_seller);
-		my_seller->getCart().addToCart(&my_product);
+		Product * my_product = new Product(Product::OFFICE, pName, pPrice);
+		my_product->setSeller(my_seller);
+		my_seller->getCart().addToCart(my_product);
 	}
-	else if (strcmp(pCategory, "CLOTHES") == 0)
+	else if (pCategory == "CLOTHES")
 	{
-		Product my_product(Product::CLOTHES, pName, pPrice);
-		my_product.setSeller(my_seller);
-		my_seller->getCart().addToCart(&my_product);
+		Product * my_product = new Product(Product::CLOTHES, pName, pPrice);
+		my_product->setSeller(my_seller);
+		my_seller->getCart().addToCart(my_product);
 	}
-	else if (strcmp(pCategory, "ELECTRONICS") == 0)
+	else if (pCategory == "ELECTRONICS")
 	{
-		Product my_product(Product::ELECTRONICS, pName, pPrice);
-		my_product.setSeller(my_seller);
-		my_seller->getCart().addToCart(&my_product);
+		Product * my_product = new Product(Product::ELECTRONICS, pName, pPrice);
+		my_product->setSeller(my_seller);
+		my_seller->getCart().addToCart(my_product);
 	}
 }
 //--------------------------------------------------------------------------------------------//
 void Case4(System & user)
 {
-	char name[MAX_CHAR_INPUT];
-	char pass[MAX_CHAR_INPUT];
+	string name;
+	string pass;
 	cout << "Hey Buyer, Please Log in first to add a feedback" << endl;
 	logIn(name, pass, user);
 	Buyer * my_buyer = user.findBuyer(name);
-	char sellerName[MAX_CHAR_INPUT];
+	string sellerName;
 	int	purchaseDay;
 	int orderNumber;
 	int	purchaseMonth;
 	int	purchaseYear;
-	char description[MAX_DESCRIPTION_SIZE];
+	string description;
 	cout << "Welcome, " << my_buyer->getName() << endl;
 	cout << "Please enter the name of the seller you want to write a feedback to: " << endl;
-	cin.getline(sellerName, MAX_CHAR_INPUT);
+	getline(cin, sellerName);
 	if (user.findSeller(sellerName) == nullptr)
 	{
 		cout << "We haven't found seller as you entered! returning to main menu" << endl;
@@ -341,7 +334,7 @@ void Case4(System & user)
 	Date purchaseDate(purchaseDay, purchaseMonth, purchaseYear);
 	cout << "Please enter your feedback description : " << endl;
 	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(description, MAX_DESCRIPTION_SIZE);
+	getline(cin, description);
 	Feedback my_feedback(my_buyer->getName(), purchaseDate, description);
 	my_seller->addFeedback(&my_feedback);
 
@@ -349,24 +342,24 @@ void Case4(System & user)
 //--------------------------------------------------------------------------------------------//
 void Case5(System & user)
 {
-	char name[MAX_CHAR_INPUT];
-	char pass[MAX_CHAR_INPUT];
+	string name;
+	string pass;
 	cout << "Hey Buyer, Please Log in first to add a product" << endl;
 	logIn(name, pass, user);
 	bool flag = false;
 	int to_continue, pSerial;
-	char pCategory[MAX_CHAR_INPUT];
+	string pCategory;
 	Buyer * my_buyer = user.findBuyer(name);
 	cout << "Welcome, " << my_buyer->getName() << endl;
 	while (flag == false) // press 1 to continue looking for products, 0 to start adding products to cart
 	{
 		cout << "Please enter the category you want to search in: (KIDS,ELECTRONICS,OFFICE,CLOTHES) " << endl;
-		cin.getline(pCategory, MAX_CHAR_INPUT);
+		getline(cin, pCategory);
 		cin.clear();
-		while (strcmp(pCategory, "KIDS") != 0 && strcmp(pCategory, "OFFICE") != 0 && strcmp(pCategory, "ELECTRONICS") != 0 && strcmp(pCategory, "CLOTHES") != 0)
+		while (pCategory != "KIDS" && pCategory != "OFFICE" && pCategory != "ELECTRONICS" && pCategory != "CLOTHES")
 		{
 			cout << "Please enter again the product category: (KIDS,CLOTHES,ELECTRONICS,OFFICE)" << endl;
-			cin.getline(pCategory, MAX_CHAR_INPUT);
+			getline(cin, pCategory);
 		}
 		cout << "These are the products that are currently in the category " << pCategory << endl;
 		Seller * temp;
@@ -393,8 +386,8 @@ void Case5(System & user)
 	}
 	cout << "Please enter the seller you want to buy from" << endl;
 	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(name, MAX_CHAR_INPUT);
-	if (strcmp(name, my_buyer->getName()) == 0)
+	getline(cin, name);
+	if (name == my_buyer->getName())
 	{ // Buyer-Seller trying to buy something from itself
 		cout << "You can't buy a product you are selling yourself! returning to main menu " << endl;
 		return;
@@ -406,7 +399,7 @@ void Case5(System & user)
 	{
 		cout << "Are you sure? seller not found! try again" << endl;
 		cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-		cin.getline(name, MAX_CHAR_INPUT);
+		std::getline(std::cin, name);
 		my_seller = user.findSeller(name);
 	}
 	Product * my_product = my_seller->getCart().getProductBySerial(pSerial);
@@ -422,8 +415,8 @@ void Case5(System & user)
 //--------------------------------------------------------------------------------------------//
 void Case6(System & user)
 {//place a order
-	char name[MAX_CHAR_INPUT];
-	char pass[MAX_CHAR_INPUT];
+	string name;
+	string pass;
 	cout << "Hey Buyer, Please Log in first to add a product" << endl;
 	logIn(name, pass, user);
 	int countP = 0, counterArr = 0;
@@ -454,7 +447,7 @@ void Case6(System & user)
 		cout << "You cant buy more products than you have in your cart, please enter again:" << endl;
 		cin >> countP;
 	}
-	Order order(countP);
+	Order * order = new Order(countP);
 	if (countP == 0)
 	{
 		cout << "You Pressed 0 Proudcts." << endl;return;
@@ -471,10 +464,10 @@ void Case6(System & user)
 			if ((my_buyer->getCart().getProductArr())[i]->getSerial() == serial)
 			{
 				temp = ((my_buyer->getCart().getProductArr())[i]);
-				if (order.checkQuantity(temp) == false)
+				if (order->checkQuantity(temp) == false)
 				{
-					order.GetProductsArray()[counterArr] = temp;
-					orderTotalPrice += order.GetProductsArray()[counterArr]->getPrice();
+					order->addProduct(temp);
+					orderTotalPrice += order->GetProductsArray()[counterArr]->getPrice();
 					counterArr++;
 					counter++;
 				}
@@ -488,27 +481,27 @@ void Case6(System & user)
 			cin >> serial;
 		}
 	}
-	order.setNumberOfProd(counterArr);
-	order.SetPrice(orderTotalPrice);
-	my_buyer->AddOrderToOrderArr(&order);
+	order->setNumberOfProd(counterArr);
+	order->SetPrice(orderTotalPrice);
+	my_buyer->AddOrderToOrderArr(order);
 	cout << "that is your order:" << endl;
 	for (int i = 0; i < countP; i++)
 	{
 		cout << "<----------------------------------------->" << endl;
-		cout << "- Product's Name : " << order.GetProductsArray()[i]->getName() << endl;
-		cout << "- Product's Price : " << order.GetProductsArray()[i]->getPrice() << endl;
-		cout << "- Product's serial number : " << order.GetProductsArray()[i]->getSerial() << endl;
+		cout << "- Product's Name : " << order->GetProductsArray()[i]->getName() << endl;
+		cout << "- Product's Price : " << order->GetProductsArray()[i]->getPrice() << endl;
+		cout << "- Product's serial number : " << order->GetProductsArray()[i]->getSerial() << endl;
 	}
 	cout << "<----------------------------------------->" << endl;
-	cout << "Total cart cost:-" << order.GetPriceOfOrder() << "- shekel's" << endl;
+	cout << "Total cart cost:-" << order->GetPriceOfOrder() << "- shekel's" << endl;
 
 }
 //--------------------------------------------------------------------------------------------//
 void Case7(System & user)
 {
 	int confirm;
-	char name[MAX_CHAR_INPUT];
-	char pass[MAX_CHAR_INPUT];
+	string name;
+	string pass;
 	logIn(name, pass, user);
 	Buyer *my_buyer = (user.findBuyer(name));
 	cout << "Welcome, " << my_buyer->getName() << endl;
@@ -546,10 +539,10 @@ void Case9(System & user)
 //--------------------------------------------------------------------------------------------//
 void Case10(System & user)
 {
-	char pName[MAX_CHAR_INPUT];
+	string pName;
 	cout << "Please enter the name of the product you want to search for: " << endl;
 	cin.ignore(numeric_limits <streamsize> ::max(), '\n');
-	cin.getline(pName, MAX_CHAR_INPUT);
+	getline(cin, pName);
 	Seller * temp;
 	for (int i = 0; i < user.getLogicSize(); i++)
 	{

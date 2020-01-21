@@ -2,7 +2,6 @@
 #include "product.h"
 Order::Order()
 {
-	this->o_productArr = nullptr;
 	this->o_numberofP = 0;
 	this->o_price = 0;
 	this->o_number = ++counter;
@@ -11,7 +10,6 @@ Order::Order()
 //----------------------------------------------------------------------------------------//
 Order::Order(int numberofProduct)
 {
-	this->o_productArr = new Product *[numberofProduct];
 	this->o_numberofP = numberofProduct;
 	this->o_price = 0;
 	this->o_number = ++counter;
@@ -22,11 +20,7 @@ Order::Order(const Order & other)
 {
 	this->o_number = other.o_number;
 	this->o_numberofP = other.o_numberofP;
-	this->o_productArr = new Product*[other.o_numberofP];
-	for (int i = 0; i < this->o_numberofP; i++)
-	{
-		this->o_productArr[i] = other.o_productArr[i];
-	}
+	this->o_productArr = other.o_productArr;
 	this->o_price = other.o_price;
 	this->o_isPaid = other.o_isPaid;
 }
@@ -39,7 +33,7 @@ void Order::SetPrice(const int price)
 int Order::GetPriceOfOrder() const
 {
 	int sum = 0;
-	if (this->o_productArr == nullptr)
+	if (this->o_productArr.size() == 0)
 		return 0;
 	for (int i = 0; i < this->o_numberofP; i++)
 	{
@@ -64,9 +58,13 @@ void Order::setNumberOfProd(const int numberofp)
 	this->o_numberofP = numberofp;
 }
 //----------------------------------------------------------------------------------------//
-Product ** Order::GetProductsArray() const
+vector<Product *> Order::GetProductsArray() const
 {
 	return this->o_productArr;
+}
+void Order::addProduct(Product * prod)
+{
+	this->o_productArr.push_back(prod);
 }
 //----------------------------------------------------------------------------------------//
 void Order::setNumberofOrder(const int number)
@@ -78,7 +76,6 @@ bool Order::SetProductArray()
 {
 	if (this->o_numberofP == 0)
 		return 0;
-	this->o_productArr = new Product *[this->o_numberofP];
 	return 1;
 }
 //----------------------------------------------------------------------------------------//
@@ -93,16 +90,18 @@ bool Order::getPaymentSatus()
 //----------------------------------------------------------------------------------------//
 Order::~Order()
 {
-	delete[] this->o_productArr;
+	this->o_productArr.clear();
 }
 //----------------------------------------------------------------------------------------//
 int Order::counter = 0;
 //----------------------------------------------------------------------------------------//
 bool Order::checkQuantity(Product * temp)
 {
-	for (int i = 0; i < this->o_numberofP; i++)
+	vector<Product *>::iterator itr = this->o_productArr.begin();
+	vector<Product *>::iterator itrEnd = this->o_productArr.end();
+	for (; itr != itrEnd; ++itr)
 	{
-		if (temp == this->GetProductsArray()[i])
+		if (*itr == temp)
 			return true;
 	}
 	return false;

@@ -6,20 +6,19 @@ class Feedback
 {
 private:
 	Date f_date;
-	char * f_name;
-	char * f_description;
+	string f_name;
+	string f_description;
 public:
 	Feedback() = default;//default c'tor
-	Feedback(const char * name, Date date, const char * description);//main c'tor
+	Feedback(const string & name, Date date, const string & description);//main c'tor
 	Feedback(const Feedback & other);
 	Feedback(Feedback && other);
-	~Feedback();
 public:
-	void setName(const char * fname);
-	void setDescription(const char * fdesc);
+	void setName(const string & fname);
+	void setDescription(const string & fdesc);
 	void setDate(Date other);
-	const char * getName() const;
-	const char * getDescription() const;
+	const string & getName() const;
+	const string & getDescription() const;
 	Date & getDate();
 };
 

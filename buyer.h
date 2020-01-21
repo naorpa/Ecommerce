@@ -2,6 +2,7 @@
 #define __BUYER_H
 #include <iostream>
 #include <string.h>
+#include <vector>
 #include "address.h"
 #include "cart.h"
 #include "order.h"
@@ -12,15 +13,12 @@ using namespace std;
 class Buyer : virtual public Users
 {
 protected:
-	Cart		b_cart;
-	Order**		b_order;
-	int			b_order_size;
+	Cart					b_cart;
+	vector <Order *>		b_order;
 public:
 	Buyer() = default; // default c'tor
+	Buyer(const string & name, const string & password, Address & address); //main c'tor//
 	Buyer(ifstream &in) :Users(in) {};
-	Buyer(const char * name, const char * password, Address & address); //main c'tor//
-	Buyer(const Buyer & other); //copy c'tor
-	Buyer(Buyer && other);//move c'tor!
 	virtual ~Buyer();//d'tor
 public:
 	virtual const Buyer& operator=(const Buyer& other);
@@ -28,10 +26,10 @@ public:
 	friend ostream& operator<<(ostream & os, Buyer & buyer);
 	const Buyer & operator>(Buyer & other1);
 public:
+
 	Cart & getCart();
 	bool findOrder(int num_of_order);
-	Order ** GetOrderArray() const;
-	void SetOrderLogicSize(const int size);
+	vector <Order *> GetOrderArray() const;
 	void AddOrderToOrderArr(Order * order);
 	int getOrderlogicsize() const;
 	void makeOrder();

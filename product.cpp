@@ -1,8 +1,8 @@
 #include "product.h"
 
-const char * Product::ProductCategoryStr[] = { "Kids", "Electronics", "Office","Clothes" };
+const string Product::ProductCategoryStr[] = { "KIDS", "ELECTRNOICS", "OFFICE","CLOTHES" };
 //----------------------------------------------------------------------------------------//
-Product::Product(const eProductCategory p_category,const char * name,const int price)
+Product::Product(const eProductCategory p_category, const string & name,const int price)
 {
 	//main c'tor
 	setName(name);
@@ -30,16 +30,12 @@ Product::Product(Product && other)
 	other.p_name = nullptr;
 	other.p_name = nullptr;
 }
+
 //----------------------------------------------------------------------------------------//
-Product::~Product()
-{	//d'tor
-	delete[] p_name;
-}
-//----------------------------------------------------------------------------------------//
-void Product::setName(const char * name)
+void Product::setName(const string & name)
 {
 	//the function sets the product's name
-	p_name = strdup(name);
+	p_name = name;
 }
 //----------------------------------------------------------------------------------------//
 void Product::setCategory(const eProductCategory category)
@@ -65,7 +61,7 @@ Product::eProductCategory Product::getCategory() const
 	return p_category;
 }
 //----------------------------------------------------------------------------------------//
-const char * Product::getName() const
+const string &  Product::getName() const
 {
 	return p_name;
 }
@@ -91,7 +87,7 @@ Seller *Product::Getseller() const
 	return this->p_seller;
 }
 //----------------------------------------------------------------------------------------//
-char * Product::getCategoryByString() const
+const string & Product::getCategoryByString() 
 {
 	if (p_category == CLOTHES)
 		return "CLOTHES";

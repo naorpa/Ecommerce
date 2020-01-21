@@ -11,7 +11,7 @@ class  Order
 private:
 	static int counter;//for o_number
 	int  o_number;
-	Product **o_productArr;
+	vector <Product *> o_productArr;
 	int o_numberofP;
 	int o_price;
 	bool o_isPaid;
@@ -26,7 +26,8 @@ public:
 	int GetOrderNumber()const;
 	int getNumberOfProd() const;
 	void setNumberOfProd(const int numberofp);
-	Product **GetProductsArray()const;
+	vector <Product *> GetProductsArray() const;
+	void addProduct(Product * prod);
 	void setNumberofOrder(const int number);
 	bool SetProductArray();
 	void setPaymentSatus(bool flag);
