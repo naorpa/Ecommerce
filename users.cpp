@@ -1,5 +1,6 @@
 #include "users.h"
 #include "system.h"
+
 Users::Users(const char * name, const char * password, Address & add) : add(add)
 { // default c'tor
 	setName(name);
@@ -90,5 +91,67 @@ const Users & Users::operator=(Users && other)
 	}
 	return *this;
 }
+
 //----------------------------------------------------------------------------------------//
+
+ostream & operator<<(ostream & out, Users & u)
+{
+		
+		if (typeid(out) == typeid(ofstream))
+			out << u.getName() << " " << u.getPassword() << " "<<u.add;
+		else //(typeid(out)==typeid(ostream)
+			out << "User name:" << u.getName() << " User Password:" << u.getPassword() << " User Adress:" << u.add;
+		return out;
+	
+}
+//----------------------------------------------------------------------------------------//
+void saveUsers(Users ** users, int size, const char * filename)
+{
+	ofstream outFile(filename, ios::trunc);
+	outFile << size << endl;
+	for (int i = 0; i < size; i++)
+		outFile << typeid(*users[i]).name() + 6 << " " << *users[i] << endl;
+	outFile.close();
+}
+//----------------------------------------------------------------------------------------//
+Users ** loadAllUsers(const char * filename, int &numOfusers)
+{
+
+	ifstream inFile(filename, ios::in);
+	inFile >> numOfusers;
+	Users ** UsersFromFile = new Users*[numOfusers];
+	for (int i = 0; i < numOfusers; i++)
+	{
+			UsersFromFile[i] = loadUser(inFile);
+	}
+	inFile.close();
+	return UsersFromFile;
+}
+Users *loadUser(ifstream & inFile)
+{
+	Users *temp;
+	char type[Users::TYPE_LEN + 1];
+	inFile >> type;
+	type[Users::TYPE_LEN] = '\0';
+	if (strcmp(typeid(BNS).name() + 6, type) == 0)
+	{
+		temp = new BNS(inFile);
+		return temp;
+	}
+	if (strcmp(typeid(Buyer).name() + 6, type) == 0)
+	{
+		temp = new Buyer(inFile);
+		return temp;
+	}
+	if (strcmp(typeid(Seller).name() + 6, type) == 0)
+	{
+		temp = new Seller(inFile);
+		return temp;
+	}
+	else
+		return NULL;
+}
+
+
+
 

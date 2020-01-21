@@ -7,6 +7,7 @@ class BNS : public Seller, public Buyer
 public:
 	BNS(const char * name,const char* pass, Address & add);
 	BNS(const BNS & other);
+	BNS(ifstream &in) :Users(in) {};
 public:
 	friend ostream& operator<<(ostream & os, BNS & bns);
 };

@@ -1,5 +1,4 @@
 #include "address.h"
-#include <string.h>
 #pragma warning(disable: 4996)
 Address::Address(char  *city,char* state,char * street)
 {
@@ -54,5 +53,16 @@ const char * Address::getCity()const
  }
  //----------------------------------------------------------------------------------------//
 
-
-
+ ostream & operator <<(ostream & out, Address & ad)
+ {
+	
+	 if (typeid(out) == typeid(ofstream))
+		 out << ad.a_state << " " << ad.a_city << " " << ad.a_street;
+	 else //(typeid(out)==typeid(ostream)
+	 {
+		 out << "State: " << ad.a_state;
+		 out << " City " << ad.a_city;
+		 out << " Street: " << ad.a_street;
+	 }
+	 return out;
+ }

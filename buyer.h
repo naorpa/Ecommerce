@@ -17,6 +17,7 @@ protected:
 	int			b_order_size;
 public:
 	Buyer() = default; // default c'tor
+	Buyer(ifstream &in) :Users(in) {};
 	Buyer(const char * name, const char * password, Address & address); //main c'tor//
 	Buyer(const Buyer & other); //copy c'tor
 	Buyer(Buyer && other);//move c'tor!
@@ -33,7 +34,6 @@ public:
 	void SetOrderLogicSize(const int size);
 	void AddOrderToOrderArr(Order * order);
 	int getOrderlogicsize() const;
-	void printBuyer();
 	void makeOrder();
 };
 

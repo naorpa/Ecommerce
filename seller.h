@@ -17,6 +17,7 @@ protected :
 	int			s_feed_lsize = 0;
 	int			s_feed_phsize = 1;
 public:
+	Seller(ifstream &in) :Users(in) {};
 	Seller() = default; // default c'tor
 	Seller(const char * name, const char * password, Address & address); //main c'tor 
 	Seller(const Seller & other); //copy c'tor

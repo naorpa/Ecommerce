@@ -133,6 +133,7 @@ int & System::getLogicSize()
 	 }
 	 return false;
  }
+
  //----------------------------------------------------------------------------------------//
  const System & System::operator+=(Users & other)
  {
@@ -155,7 +156,7 @@ int & System::getLogicSize()
 			 cout << bnstemp->getName() << endl;
 		 }
 		 btemp = dynamic_cast<Buyer *>(this->user_arr[i]);
-		 if (btemp)
+		 if (btemp && !bnstemp)
 		 {
 			 cout << "Index: " << i << " - ";
 			 cout << btemp->getName() << endl;;
@@ -169,4 +170,12 @@ int & System::getLogicSize()
 	 cout << "The name of buyer with the exspesive cart is:" << (*btemp > *btemp2).getName() << endl;
 
  }
+ void System::SetUsersArray(Users ** u)
+ {
+	 this->user_arr = u;
+ }
  //----------------------------------------------------------------------------------------//
+ void System::setLogicSize(const int num)
+ {
+	 this->logic_size = num;
+ }

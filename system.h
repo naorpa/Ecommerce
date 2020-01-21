@@ -24,8 +24,11 @@ public:
 	Buyer * findBuyer(const char * name);
 	bool checkName(const char * name);
 	void LargerCart();
+	void SetUsersArray(Users **u);
 
 public:
+	void setLogicSize(const int num);
+	
 	const System & operator+=(Users & other);
 };
 #endif // !__System_H
