@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="address.h" />
+    <ClInclude Include="array.h" />
     <ClInclude Include="bns.h" />
     <ClInclude Include="Operation.h" />
     <ClInclude Include="users.h" />

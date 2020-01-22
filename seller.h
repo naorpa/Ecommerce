@@ -6,16 +6,15 @@
 #include "cart.h"
 #include "buyer.h"
 #include "users.h"
+#include "array.h"
 
 class Seller : virtual public Users
 {
 public:
 	static constexpr int MAX_ARR_SIZE = 256;
 protected :
-	Feedback **	s_feedArr = nullptr;  
+	Array <Feedback> s_feedArr = NULL;
 	Cart		s_cart;
-	int			s_feed_lsize = 0;
-	int			s_feed_phsize = 1;
 public:
 	Seller() = default; // default c'tor
 	Seller(ifstream &in) :Users(in) {};
