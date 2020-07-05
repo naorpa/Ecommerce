@@ -1,4 +1,2 @@
-תרגיל מספר 1.
-מוגש ע"י : נאור פשאי 313524886
-עומר צדקוני 316498294
-קבוצה א' קרן כליף 
+Ecommerce system in c++. 
+part of exrecise in object oriented programming. 
